@@ -1,0 +1,8 @@
+Bibliotek:
+Oprette BPMNobjekt.
+Tilføje start og slut noder.
+Tilføje aktiviteter.
+Tilføje sequence arrows.
+Tilføje parallel split og samling.
+Tilføje choice og merge.
+Printe.

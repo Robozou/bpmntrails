@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" exporter="BMPNTrails" exporterVersion="1" targetNamespace="BPMNTrails" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://www.omg.org/spec/BPMN/2.0/20100501/BPMN20.xsd">
+  <bpmn:process isExecutable="false" id="process_id">
+    <bpmn:startEvent id="start">
+      <bpmn:outgoing>seq2</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Fill out an expense report" name="Fill out an expense report">
+      <bpmn:incoming>seq2</bpmn:incoming>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="seq2" sourceRef="start" targetRef="Fill out an expense report" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="diagram_id">
+    <bpmndi:BPMNPlane bpmnElement="process_id" id="plane_id">
+      <bpmndi:BPMNShape bpmnElement="start" id="start_shape">
+        <omgdc:Bounds height="36" width="36" x="0" y="0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Fill out an expense report" id="Fill out an expense report_shape">
+        <omgdc:Bounds height="80" width="100" x="0" y="0" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="seq2" id="seq2_edge">
+        <omgdi:waypoint x="0" y="0" />
+        <omgdi:waypoint x="0" y="0" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
