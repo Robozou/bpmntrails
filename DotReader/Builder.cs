@@ -23,38 +23,69 @@ namespace DotReader
         public void Build()
         {
             trail.addStartEvent("start");
-            NextNode(FindStartNode().id, "start");
+            string startNodeId = FindStartNode().id;
+            List<string> tail = new List<string>();
+            tail.Add(startNodeId);
+            NextNode(startNodeId, "start", tail);
         }
 
-        private void NextNode(string fromIdNode, string fromIdElement)
+        private void NextNode(string fromIdNode, string fromIdElement, List<string> tail)
         {
+            string splitName;
+            string taskId;
+            string endName;
             if (fromIdNode == null || fromIdElement == null)
             {
                 return;
             }
 
             List<Edge> outGoing = OutGoingEdges(FindNode(fromIdNode));
-            outGoing = outGoing.FindAll(e => !IsToNode(FindNode(fromIdNode), e));
+            outGoing = outGoing.FindAll(e => !IsToNode(FindNode(fromIdNode), e)); //Find way to handle slfloops
+            outGoing.Sort((a, b) => { return FindNode(a.toId).timesUsed.CompareTo(FindNode(b.toId).timesUsed); });
+
+            List<Node> n = new List<Node>();
+            foreach(Edge e in outGoing)
+            {
+                n.Add(FindNode(e.toId));
+            }
+            n.ForEach(Console.WriteLine);
+            Console.ReadLine();
+            
             if (outGoing.Count > 1)
             {
-                string splitname = "split" + splitnum;
-                trail.addParallelGateway(splitname, false);
-                trail.addSequenceFlow(seqnum, fromIdElement, splitname);
+                splitName = splitnum;
+                trail.addExclusiveGateway(splitName, false);
+                trail.addSequenceFlow(seqnum, fromIdElement, splitName);
                 foreach (Edge e in outGoing)
                 {
-                    string id1 = e.name + padding;
-                    trail.addTask(id1, e.name);
-                    trail.addSequenceFlow(seqnum, splitname, id1);
-                    NextNode(FindNode(e.toId).id, splitname);
+                    if (FindNode(tail[tail.Count-1]).timesUsed>0)
+                    {
+                        tail.ForEach(l => FindNode(l).timesUsed--);
+                        taskId = (e.name + padding).Replace(" ", "");
+                        trail.addTask(taskId, e.name);
+                        trail.addSequenceFlow(seqnum, splitName, taskId);
+                        tail.Add(e.toId);
+                        NextNode(e.toId, taskId, tail);
+                    }
                 }
             }
             else if (outGoing.Count == 1)
             {
-                string id2 = outGoing[0].name + padding;
-                trail.addTask(id2, outGoing[0].name);
-                trail.addSequenceFlow(seqnum, fromIdElement, id2);
-                Node node = FindNode(outGoing[0].toId);
-                NextNode(node.id, outGoing[0].name);
+                if (FindNode(tail[tail.Count - 1]).timesUsed > 0)
+                {
+                    tail.ForEach(l => FindNode(l).timesUsed--);
+                    taskId = (outGoing[0].name + padding).Replace(" ", "");
+                    trail.addTask(taskId, outGoing[0].name);
+                    trail.addSequenceFlow(seqnum, fromIdElement, taskId);
+                    tail.Add(outGoing[0].toId);
+                    NextNode(outGoing[0].toId, taskId, tail);
+                }
+            }
+            else
+            {
+                endName = "end" + padding;
+                trail.addEndEvent(endName);
+                trail.addSequenceFlow(seqnum, fromIdElement, endName);
             }
         }
 
@@ -67,12 +98,12 @@ namespace DotReader
             }
         }
 
-        private int splitnum
+        private string splitnum
         {
             get
             {
                 _splitnum++;
-                return _splitnum;
+                return "split" + _splitnum;
             }
         }
 
