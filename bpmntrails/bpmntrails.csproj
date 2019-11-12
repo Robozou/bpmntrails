@@ -49,7 +49,7 @@
     <Compile Include="Definition.cs" />
     <Compile Include="Diagram.cs" />
     <Compile Include="EndEvent.cs" />
-    <Compile Include="InclusiveGateway.cs" />
+    <Compile Include="ExclusiveGateway.cs" />
     <Compile Include="ParallelGateway.cs" />
     <Compile Include="Process.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

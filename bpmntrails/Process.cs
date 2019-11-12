@@ -17,7 +17,7 @@ namespace bpmntrails
         [XmlElement(ElementName = "parallelGateway", Namespace = "http://www.omg.org/spec/BPMN/20100524/MODEL")]
         public List<ParallelGateway> parallelGateways = new List<ParallelGateway>();
         [XmlElement(ElementName = "inclusiveGateway", Namespace = "http://www.omg.org/spec/BPMN/20100524/MODEL")]
-        public List<InclusiveGateway> inclusiveGateways = new List<InclusiveGateway>();
+        public List<ExclusiveGateway> inclusiveGateways = new List<ExclusiveGateway>();
         [XmlAttribute(AttributeName = "id")]
         public string id { get; set; }
         [XmlAttribute(AttributeName = "isExecutable")]

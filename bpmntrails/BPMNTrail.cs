@@ -79,9 +79,9 @@ namespace bpmntrails
             trail.diagram.bpmnPlane.bpmnShapes.Add(bPMNShape);
         }
 
-        public void addInclusiveGateway(string id, Boolean converging)
+        public void addExclusiveGateway(string id, Boolean converging)
         {
-            InclusiveGateway inclusiveGateway = new InclusiveGateway();
+            ExclusiveGateway inclusiveGateway = new ExclusiveGateway();
             inclusiveGateway.id = id;
             inclusiveGateway.gatewayDirection = (converging ? "Converging" : "Diverging");
             trail.process.inclusiveGateways.Add(inclusiveGateway);
@@ -150,7 +150,7 @@ namespace bpmntrails
                     par.incoming.Add(id);
                 }
             }
-            foreach (InclusiveGateway inc in trail.process.inclusiveGateways)
+            foreach (ExclusiveGateway inc in trail.process.inclusiveGateways)
             {
                 if (inc.id.Equals(sourceId))
                 {
