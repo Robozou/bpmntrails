@@ -81,10 +81,10 @@ namespace bpmntrails
 
         public void addExclusiveGateway(string id, Boolean converging)
         {
-            ExclusiveGateway inclusiveGateway = new ExclusiveGateway();
-            inclusiveGateway.id = id;
-            inclusiveGateway.gatewayDirection = (converging ? "Converging" : "Diverging");
-            trail.process.inclusiveGateways.Add(inclusiveGateway);
+            ExclusiveGateway exclusiveGateway = new ExclusiveGateway();
+            exclusiveGateway.id = id;
+            exclusiveGateway.gatewayDirection = (converging ? "Converging" : "Diverging");
+            trail.process.exclusiveGateways.Add(exclusiveGateway);
             BPMNShape bPMNShape = new BPMNShape();
             bPMNShape.id = id + "_shape";
             bPMNShape.bpmnElement = id;
@@ -150,7 +150,7 @@ namespace bpmntrails
                     par.incoming.Add(id);
                 }
             }
-            foreach (ExclusiveGateway inc in trail.process.inclusiveGateways)
+            foreach (ExclusiveGateway inc in trail.process.exclusiveGateways)
             {
                 if (inc.id.Equals(sourceId))
                 {

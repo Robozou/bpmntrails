@@ -16,8 +16,8 @@ namespace bpmntrails
         public List<SequenceFlow> sequenceFlows = new List<SequenceFlow>();
         [XmlElement(ElementName = "parallelGateway", Namespace = "http://www.omg.org/spec/BPMN/20100524/MODEL")]
         public List<ParallelGateway> parallelGateways = new List<ParallelGateway>();
-        [XmlElement(ElementName = "inclusiveGateway", Namespace = "http://www.omg.org/spec/BPMN/20100524/MODEL")]
-        public List<ExclusiveGateway> inclusiveGateways = new List<ExclusiveGateway>();
+        [XmlElement(ElementName = "exclusiveGateway", Namespace = "http://www.omg.org/spec/BPMN/20100524/MODEL")]
+        public List<ExclusiveGateway> exclusiveGateways = new List<ExclusiveGateway>();
         [XmlAttribute(AttributeName = "id")]
         public string id { get; set; }
         [XmlAttribute(AttributeName = "isExecutable")]
