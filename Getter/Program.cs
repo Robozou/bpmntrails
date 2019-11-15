@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
-using System.Web.Script.Serialization;
+using System.Xml;
 
 namespace Getter
 {
@@ -10,27 +12,30 @@ namespace Getter
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Username:");
-            string user = Console.ReadLine();
-            Console.WriteLine("Password:");
-            string pswd = Console.ReadLine();
+            //Console.WriteLine("Username:");
+            //string user = Console.ReadLine();
+            //Console.WriteLine("Password:");
+            //string pswd = Console.ReadLine();
+            string[] lines = System.IO.File.ReadAllLines(@"XXX");
             HttpWebRequest request = WebRequest.Create("https://repository.dcrgraphs.net/api/graphs/4013/sims?format=DCRXMLLog&filter=exportlog&isScenario=true") as HttpWebRequest;
-            //HttpWebRequest request = WebRequest.Create("https://repository.dcrgraphs.net/api/graphs/4013/sims?format=XES&filter=exportlog") as HttpWebRequest;
-            request.Method = "POST";
-            request.Headers["Authorization"] = "Basic " + Convert.ToBase64String(Encoding.Default.GetBytes(user + ":" + pswd));
+            //HttpWebRequest request = WebRequest.Create("https://repository.dcrgraphs.net/api/graphs/4013/sims?format=XES&filter=exportlog&isScenario=true") as HttpWebRequest;
+            request.Method = "GET";
+            request.Headers["Authorization"] = "Basic " + Convert.ToBase64String(Encoding.Default.GetBytes(lines[0] + ":" + lines[1]));
             request.ContentLength = 0 ;
             string resp;
+            XmlDocument xml = new XmlDocument();
             using(HttpWebResponse response = request.GetResponse() as HttpWebResponse)
             {
                 using(TextReader reader = new StreamReader(response.GetResponseStream()))
                 {
-                    JavaScriptSerializer js = new JavaScriptSerializer();
+                    resp = reader.ReadToEnd();
+                    xml.LoadXml(resp);
+                    xml.Save("..\\..\\..\\..\\testRead.xml");
                 }
-                resp = ((new StreamReader(response.GetResponseStream())).ReadToEnd()).Replace("\\r\\n", "").Replace("\\\"", "\"").Replace("\"<events", "<events").Replace("</events>\"", "</events>").Replace(" =\"", "="); ;
             }
 
-            (new StreamWriter("..\\..\\..\\..\\testRead.xml")).WriteLine(resp);
-            
+            //(new StreamWriter("..\\..\\..\\..\\testRead.xml")).WriteLine(resp);
+
         }
     }
 }
