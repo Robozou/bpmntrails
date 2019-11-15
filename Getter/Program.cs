@@ -18,7 +18,6 @@ namespace Getter
             //string pswd = Console.ReadLine();
             string[] lines = System.IO.File.ReadAllLines(@"XXX");
             HttpWebRequest request = WebRequest.Create("https://repository.dcrgraphs.net/api/graphs/4013/sims?format=DCRXMLLog&filter=exportlog&isScenario=true") as HttpWebRequest;
-            //HttpWebRequest request = WebRequest.Create("https://repository.dcrgraphs.net/api/graphs/4013/sims?format=XES&filter=exportlog&isScenario=true") as HttpWebRequest;
             request.Method = "GET";
             request.Headers["Authorization"] = "Basic " + Convert.ToBase64String(Encoding.Default.GetBytes(lines[0] + ":" + lines[1]));
             request.ContentLength = 0 ;
@@ -33,9 +32,6 @@ namespace Getter
                     xml.Save("..\\..\\..\\..\\testRead.xml");
                 }
             }
-
-            //(new StreamWriter("..\\..\\..\\..\\testRead.xml")).WriteLine(resp);
-
         }
     }
 }
