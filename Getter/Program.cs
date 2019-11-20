@@ -27,7 +27,20 @@ namespace Getter
                 {
                     resp = reader.ReadToEnd();
                     xml.LoadXml(resp);
-                    xml.Save("..\\..\\..\\..\\testRead.xml");
+                    xml.Save("..\\..\\..\\..\\testTrace.xml");
+                }
+            }
+            request = WebRequest.Create("https://repository.dcrgraphs.net/api/graphs/13709") as HttpWebRequest;
+            request.Method = "GET";
+            request.Headers["Authorization"] = "Basic " + Convert.ToBase64String(Encoding.Default.GetBytes(lines[0] + ":" + lines[1]));
+            request.ContentLength = 0;
+            using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
+            {
+                using (TextReader reader = new StreamReader(response.GetResponseStream()))
+                {
+                    resp = reader.ReadToEnd();
+                    xml.LoadXml(resp);
+                    xml.Save("..\\..\\..\\..\\testGraph.xml");
                 }
             }
         }
