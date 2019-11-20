@@ -17,6 +17,11 @@ namespace bpmntrails
             trail.diagram.bpmnPlane.bpmnElement = "process_id";
         }
 
+        public void ContainsEvent(string id)
+        {
+            //todo check for events
+        }
+
         public void AddStartEvent(string id)
         {
             StartEvent startEvent = new StartEvent();
