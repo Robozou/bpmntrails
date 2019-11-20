@@ -48,8 +48,8 @@ namespace DCRReader
             AddRelations(includes, nestingEventIds, Processor.inc, xml);
             AddRelations(excludes, nestingEventIds, Processor.exc, xml);
             AddRelations(milestones, nestingEventIds, Processor.mile, xml);
-            graph.enable();
-            graph.save();
+            graph.Enable();
+            graph.Save();
         }
 
         private void AddRelations(XmlNodeList relations, List<string> nestingEventIds, string type, XmlDocument xml)
@@ -93,7 +93,7 @@ namespace DCRReader
             }
             else
             {
-                graph.addRelation(target, source, type);
+                graph.AddRelation(target, source, type);
             }
         }
 
@@ -112,21 +112,21 @@ namespace DCRReader
             XmlNodeList executed = xml.SelectNodes("//marking/executed/event");
             foreach (XmlElement m in pending)
             {
-                graph.setPending(m.Attributes["id"].Value);
+                graph.SetPending(m.Attributes["id"].Value);
             }
             foreach (XmlElement m in included)
             {
-                graph.setIncluded(m.Attributes["id"].Value);
+                graph.SetIncluded(m.Attributes["id"].Value);
             }
             foreach (XmlElement m in executed)
             {
-                graph.setExecuted(m.Attributes["id"].Value);
+                graph.SetExecuted(m.Attributes["id"].Value);
             }
         }
 
         private void AddEvent(XmlElement e)
         {
-            graph.addEvent(e.Attributes["id"].Value);
+            graph.AddEvent(e.Attributes["id"].Value);
         }
 
         private static void ReadTraces()
@@ -146,6 +146,7 @@ namespace DCRReader
 
         private void Build()
         {
+            XMLBuilder builder = new XMLBuilder(graph, trace);
 
         }
     }
