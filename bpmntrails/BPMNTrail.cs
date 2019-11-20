@@ -17,7 +17,7 @@ namespace bpmntrails
             trail.diagram.bpmnPlane.bpmnElement = "process_id";
         }
 
-        public void addStartEvent(string id)
+        public void AddStartEvent(string id)
         {
             StartEvent startEvent = new StartEvent();
             startEvent.id = id;
@@ -32,7 +32,7 @@ namespace bpmntrails
             trail.diagram.bpmnPlane.bpmnShapes.Add(bPMNShape);
         }
 
-        public void addTask(string id, string name)
+        public void AddTask(string id, string name)
         {
             Task task = new Task();
             task.id = id;
@@ -48,7 +48,7 @@ namespace bpmntrails
             trail.diagram.bpmnPlane.bpmnShapes.Add(bPMNShape);
         }
 
-        public void addEndEvent(string id)
+        public void AddEndEvent(string id)
         {
             EndEvent endEvent = new EndEvent();
             endEvent.id = id;
@@ -63,7 +63,7 @@ namespace bpmntrails
             trail.diagram.bpmnPlane.bpmnShapes.Add(bPMNShape);
         }
 
-        public void addParallelGateway(string id, Boolean converging)
+        public void AddParallelGateway(string id, Boolean converging)
         {
             ParallelGateway parallelGateway = new ParallelGateway();
             parallelGateway.id = id;
@@ -79,7 +79,7 @@ namespace bpmntrails
             trail.diagram.bpmnPlane.bpmnShapes.Add(bPMNShape);
         }
 
-        public void addExclusiveGateway(string id, Boolean converging)
+        public void AddExclusiveGateway(string id, Boolean converging)
         {
             ExclusiveGateway exclusiveGateway = new ExclusiveGateway();
             exclusiveGateway.id = id;
@@ -95,7 +95,7 @@ namespace bpmntrails
             trail.diagram.bpmnPlane.bpmnShapes.Add(bPMNShape);
         }
 
-        public void addSequenceFlow(string id, string sourceId, string targetId)
+        public void AddSequenceFlow(string id, string sourceId, string targetId)
         {
             SequenceFlow sequenceFlow = new SequenceFlow();
             sequenceFlow.id = id;
@@ -169,7 +169,7 @@ namespace bpmntrails
             trail.diagram.bpmnPlane.bpmnEdges.Add(bPMNEdge);
         }
 
-        public void printTrail()
+        public void PrintTrail()
         {
             XmlSerializer serial = new XmlSerializer(typeof(Definition));
             XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
