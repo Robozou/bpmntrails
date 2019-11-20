@@ -15,11 +15,11 @@ namespace DCRReader
         HashSet<string> _enabled = new HashSet<string>();
         HashSet<string> _pending = new HashSet<string>();
         HashSet<string> _executed = new HashSet<string>();
-        const string resp = "response";
-        const string inc = "include";
-        const string exc = "exclude";
-        const string cond = "conditon";
-        const string mile = "milestone";
+        public static string resp = "response";
+        public static string inc = "include";
+        public static string exc = "exclude";
+        public static string cond = "conditon";
+        public static string mile = "milestone";
 
         public void execute(string id)
         {
@@ -73,36 +73,43 @@ namespace DCRReader
 
         public void setIncluded(string id)
         {
+            if (!events.Contains(id)) return;
             included.Add(id);
         }
 
         public void setExcluded(string id)
         {
+            if (!events.Contains(id)) return;
             included.Remove(id);
         }
 
         public void setEnabled(string id)
         {
+            if (!events.Contains(id)) return;
             enabled.Add(id);
         }
 
         public void setDisabled(string id)
         {
+            if (!events.Contains(id)) return;
             enabled.Remove(id);
         }
 
         public void setExecuted(string id)
         {
+            if (!events.Contains(id)) return;
             executed.Add(id);
         }
 
         public void setPending(string id)
         {
+            if (!events.Contains(id)) return;
             pending.Add(id);
         }
 
         public void setNotPending(string id)
         {
+            if (!events.Contains(id)) return;
             pending.Remove(id);
         }
 
