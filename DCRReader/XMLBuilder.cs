@@ -23,6 +23,13 @@ namespace DCRReader
         public void Build()
         {
             GrowTree();
+            graph.Load();
+            trail.AddStartEvent(graph.GetHashCode()+"");
+            List<Tuple<string, int>> tuples = tree[graph.GetHashCode()];
+            foreach(Tuple<string,int> tuple in tuples)
+            {
+                
+            }
         }
 
         private void GrowTree()
