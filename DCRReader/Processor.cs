@@ -15,11 +15,11 @@ namespace DCRReader
         HashSet<string> _enabled = new HashSet<string>();
         HashSet<string> _pending = new HashSet<string>();
         HashSet<string> _executed = new HashSet<string>();
-        public static string resp = "response";
-        public static string inc = "include";
-        public static string exc = "exclude";
-        public static string cond = "conditon";
-        public static string mile = "milestone";
+        public const string resp = "response";
+        public const string inc = "include";
+        public const string exc = "exclude";
+        public const string cond = "conditon";
+        public const string mile = "milestone";
 
         public void execute(string id)
         {
