@@ -25,7 +25,7 @@ namespace DotReader
 
         public void Build()
         {
-            trail.addStartEvent("start");
+            trail.AddStartEvent("start");
             string startNodeId = FindStartNode().id;
             List<string> tail = new List<string>();
             tail.Add(startNodeId);
@@ -53,8 +53,8 @@ namespace DotReader
                     splitName = splitnum;
                     from = splitName;
                     isSplit = true;
-                    trail.addExclusiveGateway(splitName, false);
-                    trail.addSequenceFlow(seqnum, fromIdElement, splitName);
+                    trail.AddExclusiveGateway(splitName, false);
+                    trail.AddSequenceFlow(seqnum, fromIdElement, splitName);
                 }
                 foreach (Edge e in outGoing)
                 {
@@ -69,8 +69,8 @@ namespace DotReader
             else
             {
                 endName = "end" + padding;
-                trail.addEndEvent(endName);
-                trail.addSequenceFlow(seqnum, fromIdElement, endName);
+                trail.AddEndEvent(endName);
+                trail.AddSequenceFlow(seqnum, fromIdElement, endName);
                 tail.ForEach(l => FindNode(l).timesUsed--);
                 tail.ForEach(Console.WriteLine);
                 Console.ReadLine();
@@ -89,8 +89,8 @@ namespace DotReader
                 return;
             }
             taskId = (e.name + padding).Replace(" ", "");
-            trail.addTask(taskId, e.name);
-            trail.addSequenceFlow(seqnum, fromId, taskId);
+            trail.AddTask(taskId, e.name);
+            trail.AddSequenceFlow(seqnum, fromId, taskId);
             if (!isSplit)tail.Add(e.toId);
             NextNode(e.toId, taskId, tail);
         }
@@ -170,7 +170,7 @@ namespace DotReader
         //Todo make real print fucntion
         public void Print(string fileLoc)
         {
-            trail.printTrail();
+            trail.PrintTrail();
         }
     }
 }
