@@ -25,19 +25,19 @@ namespace DCRReader
         {
             if (enabled.Contains(id))
             {
-                setExecuted(id);
-                setNotPending(id);
-                relations.ToList<Relation>().FindAll(r => r.source == id && r.type == resp).ForEach(r => setPending(r.target));
-                relations.ToList<Relation>().FindAll(r => r.source == id && r.type == inc).ForEach(r => setIncluded(r.target));
-                relations.ToList<Relation>().FindAll(r => r.source == id && r.type == exc).ForEach(r => setPending(r.target));
+                SetExecuted(id);
+                SetNotPending(id);
+                relations.ToList<Relation>().FindAll(r => r.source == id && r.type == resp).ForEach(r => SetPending(r.target));
+                relations.ToList<Relation>().FindAll(r => r.source == id && r.type == inc).ForEach(r => SetIncluded(r.target));
+                relations.ToList<Relation>().FindAll(r => r.source == id && r.type == exc).ForEach(r => SetExcluded(r.target));
             }
 
         }
 
-        public void enable()
+        public void Enable()
         {
-            events.ToList<string>().ForEach(e => setEnabled(e));
-            events.ToList<string>().FindAll(e => !included.Contains(e)).ForEach(e => setDisabled(e));
+            events.ToList<string>().ForEach(e => SetEnabled(e));
+            events.ToList<string>().FindAll(e => !included.Contains(e)).ForEach(e => SetDisabled(e));
             foreach (Relation r in relations)
             {
                 switch (r.type)
@@ -45,13 +45,13 @@ namespace DCRReader
                     case cond:
                         if (!executed.Contains(r.source))
                         {
-                            setDisabled(r.target);
+                            SetDisabled(r.target);
                         }
                         break;
                     case mile:
                         if (pending.Contains(r.source))
                         {
-                            setDisabled(r.target);
+                            SetDisabled(r.target);
                         }
                         break;
                 }
@@ -61,59 +61,59 @@ namespace DCRReader
 
 
         #region small functions
-        public void addEvent(string id)
+        public void AddEvent(string id)
         {
             events.Add(id);
         }
 
-        public void addRelation(string target, string source, string type)
+        public void AddRelation(string target, string source, string type)
         {
             relations.Add(new Relation { target = target, source = source, type = type });
         }
 
-        public void setIncluded(string id)
+        public void SetIncluded(string id)
         {
             if (!events.Contains(id)) return;
             included.Add(id);
         }
 
-        public void setExcluded(string id)
+        public void SetExcluded(string id)
         {
             if (!events.Contains(id)) return;
             included.Remove(id);
         }
 
-        public void setEnabled(string id)
+        public void SetEnabled(string id)
         {
             if (!events.Contains(id)) return;
             enabled.Add(id);
         }
 
-        public void setDisabled(string id)
+        public void SetDisabled(string id)
         {
             if (!events.Contains(id)) return;
             enabled.Remove(id);
         }
 
-        public void setExecuted(string id)
+        public void SetExecuted(string id)
         {
             if (!events.Contains(id)) return;
             executed.Add(id);
         }
 
-        public void setPending(string id)
+        public void SetPending(string id)
         {
             if (!events.Contains(id)) return;
             pending.Add(id);
         }
 
-        public void setNotPending(string id)
+        public void SetNotPending(string id)
         {
             if (!events.Contains(id)) return;
             pending.Remove(id);
         }
 
-        public void load()
+        public void Load()
         {
             executed.Clear();
             pending.Clear();
@@ -125,7 +125,7 @@ namespace DCRReader
             _included.ToList<string>().ForEach(e => included.Add(e));
         }
 
-        public void save()
+        public void Save()
         {
             _executed.Clear();
             _pending.Clear();
