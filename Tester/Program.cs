@@ -1,4 +1,4 @@
-﻿using DotReader;
+﻿using DCRReader;
 
 namespace Tester
 {

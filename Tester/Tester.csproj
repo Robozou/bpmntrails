@@ -36,6 +36,9 @@
     <Reference Include="bpmntrails">
       <HintPath>..\bpmntrails\bin\Debug\bpmntrails.dll</HintPath>
     </Reference>
+    <Reference Include="DCRReader">
+      <HintPath>..\DCRReader\bin\Debug\DCRReader.dll</HintPath>
+    </Reference>
     <Reference Include="DotReader">
       <HintPath>..\DotReader\bin\Debug\DotReader.dll</HintPath>
     </Reference>
