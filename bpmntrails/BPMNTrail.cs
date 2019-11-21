@@ -17,9 +17,30 @@ namespace bpmntrails
             trail.diagram.bpmnPlane.bpmnElement = "process_id";
         }
 
-        public void ContainsEvent(string id)
+        public Boolean ContainsEvent(string id)
         {
-            //todo check for events
+            foreach (StartEvent se in trail.process.startEvents)
+            {
+                if (se.id.Equals(id))
+                {
+                    return true;
+                }
+            }
+            foreach (Task t in trail.process.tasks)
+            {
+                if (t.id.Equals(id))
+                {
+                    return true;
+                }
+            }
+            foreach (EndEvent ee in trail.process.endEvents)
+            {
+                if (ee.id.Equals(id))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public void AddStartEvent(string id)
