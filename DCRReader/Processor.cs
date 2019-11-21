@@ -15,18 +15,21 @@ namespace DCRReader
         HashSet<string> _enabled = new HashSet<string>();
         HashSet<string> _pending = new HashSet<string>();
         HashSet<string> _executed = new HashSet<string>();
+        List<string> executionTrace = new List<string>();
+        List<string> _executionTrace = new List<string>();
         public const string resp = "response";
         public const string inc = "include";
         public const string exc = "exclude";
         public const string cond = "conditon";
         public const string mile = "milestone";
 
-        public void execute(string id)
+        public void Execute(string id)
         {
             if (enabled.Contains(id))
             {
                 SetExecuted(id);
                 SetNotPending(id);
+                executionTrace.Add(id);
                 relations.ToList<Relation>().FindAll(r => r.source == id && r.type == resp).ForEach(r => SetPending(r.target));
                 relations.ToList<Relation>().FindAll(r => r.source == id && r.type == inc).ForEach(r => SetIncluded(r.target));
                 relations.ToList<Relation>().FindAll(r => r.source == id && r.type == exc).ForEach(r => SetExcluded(r.target));
@@ -119,10 +122,12 @@ namespace DCRReader
             pending.Clear();
             enabled.Clear();
             included.Clear();
+            executionTrace.Clear();
             _executed.ToList<string>().ForEach(e => executed.Add(e));
             _enabled.ToList<string>().ForEach(e => enabled.Add(e));
             _pending.ToList<string>().ForEach(e => pending.Add(e));
             _included.ToList<string>().ForEach(e => included.Add(e));
+            _executionTrace.ForEach(e => executionTrace.Add(e));
         }
 
         public void Save()
@@ -131,10 +136,12 @@ namespace DCRReader
             _pending.Clear();
             _enabled.Clear();
             _included.Clear();
+            _executionTrace.Clear();
             executed.ToList<string>().ForEach(e => _executed.Add(e));
             enabled.ToList<string>().ForEach(e => _enabled.Add(e));
             pending.ToList<string>().ForEach(e => _pending.Add(e));
             included.ToList<string>().ForEach(e => _included.Add(e));
+            executionTrace.ForEach(e => _executionTrace.Add(e));
         }
 
         public override bool Equals(object obj)
@@ -147,14 +154,32 @@ namespace DCRReader
                    EqualityComparer<HashSet<string>>.Default.Equals(executed, processor.executed);
         }
 
-        public override int GetHashCode()
+        //public override int GetHashCode()
+        //{
+        //    var hashCode = 1437070554;
+        //    hashCode = hashCode * -1521134295 + EqualityComparer<HashSet<string>>.Default.GetHashCode(included);
+        //    hashCode = hashCode * -1521134295 + EqualityComparer<HashSet<string>>.Default.GetHashCode(enabled);
+        //    hashCode = hashCode * -1521134295 + EqualityComparer<HashSet<string>>.Default.GetHashCode(executed);
+        //    hashCode = hashCode * -1521134295 + EqualityComparer<HashSet<string>>.Default.GetHashCode(pending);
+        //    return hashCode;
+        //}
+        public string GetHashCode()
         {
-            var hashCode = 1437070554;
-            hashCode = hashCode * -1521134295 + EqualityComparer<HashSet<string>>.Default.GetHashCode(included);
-            hashCode = hashCode * -1521134295 + EqualityComparer<HashSet<string>>.Default.GetHashCode(enabled);
-            hashCode = hashCode * -1521134295 + EqualityComparer<HashSet<string>>.Default.GetHashCode(executed);
-            hashCode = hashCode * -1521134295 + EqualityComparer<HashSet<string>>.Default.GetHashCode(pending);
-            return hashCode;
+            string hash = string.Empty;
+            List<string> inc = included.ToList<string>();
+            List<string> ena = enabled.ToList<string>();
+            List<string> pen = pending.ToList<string>();
+            List<string> exe = executed.ToList<string>();
+            inc.Sort();
+            ena.Sort();
+            pen.Sort();
+            exe.Sort();
+            inc.ForEach(s => hash += s);
+            ena.ForEach(s => hash += s);
+            pen.ForEach(s => hash += s);
+            exe.ForEach(s => hash += s);
+            executionTrace.ForEach(s => hash += s);
+            return hash;
         }
         #endregion
     }
