@@ -9,9 +9,10 @@ namespace DCRReader
     public class XMLReader
     {
         // change this to parse and fill out processor
-        List<List<EventNode>> trace = new List<List<EventNode>>();
-        Processor graph = new Processor();
-        
+        private List<List<EventNode>> trace = new List<List<EventNode>>();
+        private Processor graph = new Processor();
+        private XMLBuilder builder = null;
+
         public void Read()
         {
             ReadTraces();
@@ -22,7 +23,10 @@ namespace DCRReader
 
         private void Print()
         {
-            throw new NotImplementedException();
+            if (builder != null)
+            {
+                builder.Print();
+            }
         }
 
         private void ReadGraph()
@@ -129,7 +133,7 @@ namespace DCRReader
             graph.AddEvent(e.Attributes["id"].Value);
         }
 
-        private static void ReadTraces()
+        private void ReadTraces()
         {
             XmlDocument xml = new XmlDocument();
             xml.Load("..\\..\\..\\testTrace.xml");
@@ -141,13 +145,14 @@ namespace DCRReader
                 {
                     eventList.Add(new EventNode { id = n.ChildNodes[i].Attributes["id"].Value, label = n.ChildNodes[i].Attributes["id"].Value });
                 }
+                trace.Add(eventList);
             }
         }
 
         private void Build()
         {
-            XMLBuilder builder = new XMLBuilder(graph, trace);
-
+            builder = new XMLBuilder(graph, trace);
+            builder.Build();
         }
     }
 }
