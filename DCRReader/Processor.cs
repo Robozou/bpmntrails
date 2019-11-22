@@ -34,7 +34,7 @@ namespace DCRReader
                 relations.ToList<Relation>().FindAll(r => r.source == id && r.type == inc).ForEach(r => SetIncluded(r.target));
                 relations.ToList<Relation>().FindAll(r => r.source == id && r.type == exc).ForEach(r => SetExcluded(r.target));
             }
-
+            Enable();
         }
 
         public void Enable()
@@ -67,11 +67,13 @@ namespace DCRReader
         public void AddEvent(string id)
         {
             events.Add(id);
+            Enable();
         }
 
         public void AddRelation(string target, string source, string type)
         {
             relations.Add(new Relation { target = target, source = source, type = type });
+            Enable();
         }
 
         public void SetIncluded(string id)
@@ -128,6 +130,7 @@ namespace DCRReader
             _pending.ToList<string>().ForEach(e => pending.Add(e));
             _included.ToList<string>().ForEach(e => included.Add(e));
             _executionTrace.ForEach(e => executionTrace.Add(e));
+            Enable();
         }
 
         public void Save()
