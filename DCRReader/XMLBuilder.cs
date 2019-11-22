@@ -95,6 +95,10 @@ namespace DCRReader
                     id = n.id;
                     graph.Execute(id);
                     newState = graph.GetHashCode();
+                    if (!tree.ContainsKey(newState))
+                    {
+                        tree[newState] = new List<Tuple<string, string>>();
+                    }
                     Console.WriteLine(newState);
                     if (tree.ContainsKey(state))
                     {
