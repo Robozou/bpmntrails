@@ -8,11 +8,20 @@ namespace Getter
 {
     class Program
     {
-        static string[] lines = System.IO.File.ReadAllLines("..\\..\\..\\..\\..\\login.txt");
+        static string[] lines = File.ReadAllLines("..\\..\\..\\..\\..\\login.txt");
         static string testgraph = "4013";
+        static string locationOfGraphList = "..\\..\\..\\..\\..\\graphs.xml";
         static void Main(string[] args)
         {
-
+            XmlDocument xml = new XmlDocument();
+            if (File.Exists(locationOfGraphList))
+            {
+                xml.Load(locationOfGraphList);
+            }
+            else
+            {
+                xml = GetAndCacheGraphsWithTraces();
+            }
             //GetAndCacheGraphsWithTraces();
             //GetAndSaveGraphAndTrace();
         }
@@ -28,7 +37,7 @@ namespace Getter
                     graph.ParentNode.RemoveChild(graph);
                 }
             }
-            SaveXMLDoc(graphs, "..\\..\\..\\..\\..\\graphs1.txt");
+            SaveXMLDoc(graphs, locationOfGraphList);
             return graphs;
         }
 
