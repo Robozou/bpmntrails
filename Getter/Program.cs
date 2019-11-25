@@ -12,11 +12,12 @@ namespace Getter
         static string testgraph = "4013";
         static void Main(string[] args)
         {
-            GetAndCacheGraphsWithTraces();
+
+            //GetAndCacheGraphsWithTraces();
             //GetAndSaveGraphAndTrace();
         }
 
-        private static void GetAndCacheGraphsWithTraces()
+        private static XmlDocument GetAndCacheGraphsWithTraces()
         {
             XmlDocument graphs = GetGraphs();
             foreach (XmlElement graph in graphs.SelectNodes("//graph"))
@@ -28,6 +29,7 @@ namespace Getter
                 }
             }
             SaveXMLDoc(graphs, "..\\..\\..\\..\\..\\graphs1.txt");
+            return graphs;
         }
 
         private static void GetAndSaveGraphAndTrace()
