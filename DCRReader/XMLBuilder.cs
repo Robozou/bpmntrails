@@ -11,13 +11,13 @@ namespace DCRReader
         BPMNTrail trail = new BPMNTrail();
         private Processor graph;
         private List<List<EventNode>> trace;
-        private Dictionary<string, List<Tuple<string, string>>> tree;
+        private Dictionary<string, HashSet<Tuple<string, string>>> tree;
 
         public XMLBuilder(Processor graph, List<List<EventNode>> trace)
         {
             this.graph = graph;
             this.trace = trace;
-            this.tree = new Dictionary<string, List<Tuple<string, string>>>();
+            this.tree = new Dictionary<string, HashSet<Tuple<string, string>>>();
         }
 
         public void Print()
@@ -28,8 +28,6 @@ namespace DCRReader
         public void Build()
         {
             GrowTree();
-            //Console.WriteLine(tree.Keys.Count);
-            //Console.ReadLine();
             graph.Load();
             trail.AddStartEvent(graph.GetHashCode()+"");
             AddTasks();
@@ -86,7 +84,7 @@ namespace DCRReader
             string state;
             string id;
             string newState;
-            List<Tuple<string, string>> tuples;
+            HashSet<Tuple<string, string>> tuples;
             foreach (List<EventNode> ls in trace)
             {
                 foreach (EventNode n in ls)
@@ -97,9 +95,8 @@ namespace DCRReader
                     newState = graph.GetHashCode();
                     if (!tree.ContainsKey(newState))
                     {
-                        tree[newState] = new List<Tuple<string, string>>();
+                        tree[newState] = new HashSet<Tuple<string, string>>();
                     }
-                    Console.WriteLine(newState);
                     if (tree.ContainsKey(state))
                     {
                         tuples = tree[state];
@@ -107,7 +104,7 @@ namespace DCRReader
                     }
                     else
                     {
-                        tuples = new List<Tuple<string, string>>();
+                        tuples = new HashSet<Tuple<string, string>>();
                         tuples.Add(new Tuple<string, string>(id, newState));
                     }
                     tree[state] = tuples;
