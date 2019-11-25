@@ -28,6 +28,11 @@ namespace bpmntrails
         private void UpdatePlacement()
         {
             placeX += 120;
+            if (placeX % 610 == 0)
+            {
+                placeX = 10;
+                placeY += 100;
+            }
         }
 
         public Boolean ContainsEvent(string id)
