@@ -12,10 +12,25 @@ namespace Getter
         static string testgraph = "4013";
         static void Main(string[] args)
         {
-            GetGraphAndTrace();
+            GetAndCacheGraphsWithTraces();
+            //GetAndSaveGraphAndTrace();
         }
 
-        private static void GetGraphAndTrace()
+        private static void GetAndCacheGraphsWithTraces()
+        {
+            XmlDocument graphs = GetGraphs();
+            foreach (XmlElement graph in graphs.SelectNodes("//graph"))
+            {
+                XmlDocument trace = GetTrace(graph.Attributes["id"].Value);
+                if (0 == trace.SelectNodes("/log/trace").Count)
+                {
+                    graph.ParentNode.RemoveChild(graph);
+                }
+            }
+            SaveXMLDoc(graphs, "..\\..\\..\\..\\..\\graphs1.txt");
+        }
+
+        private static void GetAndSaveGraphAndTrace()
         {
             XmlDocument graph = GetGraph(testgraph);
             XmlDocument trace = GetTrace(testgraph);
