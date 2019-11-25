@@ -13,6 +13,16 @@ namespace Getter
         static string locationOfGraphList = "..\\..\\..\\..\\..\\graphs.xml";
         static void Main(string[] args)
         {
+            //XmlDocument graphs = GetGraphsWithTraces();
+            //while (true)
+            //{
+                
+            //}
+            
+        }
+
+        private static XmlDocument GetGraphsWithTraces()
+        {
             XmlDocument xml = new XmlDocument();
             if (File.Exists(locationOfGraphList))
             {
@@ -22,8 +32,7 @@ namespace Getter
             {
                 xml = GetAndCacheGraphsWithTraces();
             }
-            //GetAndCacheGraphsWithTraces();
-            //GetAndSaveGraphAndTrace();
+            return xml;
         }
 
         private static XmlDocument GetAndCacheGraphsWithTraces()
