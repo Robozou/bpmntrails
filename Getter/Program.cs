@@ -8,14 +8,29 @@ namespace Getter
 {
     class Program
     {
+        static string[] lines = System.IO.File.ReadAllLines("..\\..\\..\\..\\..\\login.txt");
+        static string testgraph = "4013";
         static void Main(string[] args)
         {
-            //Console.WriteLine("Username:");
-            //string user = Console.ReadLine();
-            //Console.WriteLine("Password:");
-            //string pswd = Console.ReadLine();
-            string[] lines = System.IO.File.ReadAllLines("..\\..\\..\\..\\..\\login.txt");
-            HttpWebRequest request = WebRequest.Create("https://repository.dcrgraphs.net/api/graphs/4013/sims?format=DCRXMLLog&filter=exportlog&isScenario=true") as HttpWebRequest;
+            GetGraphAndTrace();
+        }
+
+        private static void GetGraphAndTrace()
+        {
+            XmlDocument graph = GetGraph(testgraph);
+            XmlDocument trace = GetTrace(testgraph);
+            SaveXMLDoc(graph, "..\\..\\..\\..\\testGraph.xml");
+            SaveXMLDoc(trace, "..\\..\\..\\..\\testTrace.xml");
+        }
+
+        private static void SaveXMLDoc(XmlDocument xml, string fileLoc)
+        {
+            xml.Save(fileLoc);
+        }
+
+        private static XmlDocument GetTrace(string graphId)
+        {
+            HttpWebRequest request = WebRequest.Create("https://repository.dcrgraphs.net/api/graphs/"+graphId+"/sims?format=DCRXMLLog&filter=exportlog&isScenario=true") as HttpWebRequest;
             request.Method = "GET";
             request.Headers["Authorization"] = "Basic " + Convert.ToBase64String(Encoding.Default.GetBytes(lines[0] + ":" + lines[1]));
             request.ContentLength = 0;
@@ -27,22 +42,28 @@ namespace Getter
                 {
                     resp = reader.ReadToEnd();
                     xml.LoadXml(resp);
-                    xml.Save("..\\..\\..\\..\\testTrace.xml");
                 }
             }
-            request = WebRequest.Create("https://repository.dcrgraphs.net/api/graphs/13709") as HttpWebRequest;
+            return xml;
+        }
+
+        private static XmlDocument GetGraph(string graphId)
+        {
+            HttpWebRequest request = WebRequest.Create("https://repository.dcrgraphs.net/api/graphs/"+graphId) as HttpWebRequest;
             request.Method = "GET";
             request.Headers["Authorization"] = "Basic " + Convert.ToBase64String(Encoding.Default.GetBytes(lines[0] + ":" + lines[1]));
             request.ContentLength = 0;
+            string resp;
+            XmlDocument xml = new XmlDocument();
             using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
             {
                 using (TextReader reader = new StreamReader(response.GetResponseStream()))
                 {
                     resp = reader.ReadToEnd();
                     xml.LoadXml(resp);
-                    xml.Save("..\\..\\..\\..\\testGraph.xml");
                 }
             }
+            return xml;
         }
     }
 }
