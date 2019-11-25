@@ -32,7 +32,7 @@ namespace Getter
         {
             HttpWebRequest request = WebRequest.Create("https://repository.dcrgraphs.net/api/graphs/"+graphId+"/sims?format=DCRXMLLog&filter=exportlog&isScenario=true") as HttpWebRequest;
             request.Method = "GET";
-            request.Headers["Authorization"] = "Basic " + Convert.ToBase64String(Encoding.Default.GetBytes(lines[0] + ":" + lines[1]));
+            request.Headers["Authorization"] = Authorize();
             request.ContentLength = 0;
             string resp;
             XmlDocument xml = new XmlDocument();
@@ -49,9 +49,9 @@ namespace Getter
 
         private static XmlDocument GetGraph(string graphId)
         {
-            HttpWebRequest request = WebRequest.Create("https://repository.dcrgraphs.net/api/graphs/"+graphId) as HttpWebRequest;
+            HttpWebRequest request = WebRequest.Create("https://repository.dcrgraphs.net/api/graphs/" + graphId) as HttpWebRequest;
             request.Method = "GET";
-            request.Headers["Authorization"] = "Basic " + Convert.ToBase64String(Encoding.Default.GetBytes(lines[0] + ":" + lines[1]));
+            request.Headers["Authorization"] = Authorize();
             request.ContentLength = 0;
             string resp;
             XmlDocument xml = new XmlDocument();
@@ -64,6 +64,30 @@ namespace Getter
                 }
             }
             return xml;
+        }
+
+        private static XmlDocument GetGraphs()
+        {
+            HttpWebRequest request = WebRequest.Create("https://repository.dcrgraphs.net/api/graphs/") as HttpWebRequest;
+            request.Method = "GET";
+            request.Headers["Authorization"] = Authorize();
+            request.ContentLength = 0;
+            string resp;
+            XmlDocument xml = new XmlDocument();
+            using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
+            {
+                using (TextReader reader = new StreamReader(response.GetResponseStream()))
+                {
+                    resp = reader.ReadToEnd();
+                    xml.LoadXml(resp);
+                }
+            }
+            return xml;
+        }
+
+        private static string Authorize()
+        {
+            return "Basic " + Convert.ToBase64String(Encoding.Default.GetBytes(lines[0] + ":" + lines[1]));
         }
     }
 }
