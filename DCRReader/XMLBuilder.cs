@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using bpmntrails;
+﻿using bpmntrails;
 using System;
+using System.Collections.Generic;
 
 namespace DCRReader
 {
@@ -12,12 +12,19 @@ namespace DCRReader
         private Processor graph;
         private List<List<EventNode>> trace;
         private Dictionary<string, HashSet<Tuple<string, string>>> tree;
+        private XMLOptimizer optimus;
 
         public XMLBuilder(Processor graph, List<List<EventNode>> trace)
         {
             this.graph = graph;
             this.trace = trace;
             this.tree = new Dictionary<string, HashSet<Tuple<string, string>>>();
+            this.optimus = new XMLOptimizer();
+        }
+
+        public void Optimize()
+        {
+            optimus.Optimize(graph, trace, tree);
         }
 
         public void Print()
@@ -29,7 +36,7 @@ namespace DCRReader
         {
             GrowTree();
             graph.Load();
-            trail.AddStartEvent(graph.GetHashCode()+"");
+            trail.AddStartEvent(graph.GetHashCode() + "");
             AddTasks();
             AddFlows();
         }
@@ -45,21 +52,24 @@ namespace DCRReader
                     trail.AddExclusiveGateway(current, false);
                     trail.AddSequenceFlow("seqflow" + padding, key + "", current);
                     padding++;
-                } else
+                }
+                else
                 {
                     current = key + "";
                 }
-                if (tree[key].Count > 0) {
+                if (tree[key].Count > 0)
+                {
                     foreach (Tuple<string, string> transition in tree[key])
                     {
                         trail.AddSequenceFlow("seqflow" + padding, current, transition.Item2 + "");
                         padding++;
                     }
-                } else
+                }
+                else
                 {
                     current = "end" + padding;
                     trail.AddEndEvent(current);
-                    trail.AddSequenceFlow("seqflow" + padding, key+"", current);
+                    trail.AddSequenceFlow("seqflow" + padding, key + "", current);
                     padding++;
                 }
             }
@@ -67,13 +77,13 @@ namespace DCRReader
 
         private void AddTasks()
         {
-            foreach(string key in tree.Keys)
+            foreach (string key in tree.Keys)
             {
-                foreach(Tuple<string, string> transition in tree[key])
+                foreach (Tuple<string, string> transition in tree[key])
                 {
                     if (!trail.ContainsEvent(transition.Item2 + ""))
                     {
-                        trail.AddTask(transition.Item2+"", transition.Item1);
+                        trail.AddTask(transition.Item2 + "", transition.Item1);
                     }
                 }
             }

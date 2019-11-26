@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DCRReader
 {
     class XMLOptimizer
     {
+        internal void Optimize(Processor graph, List<List<EventNode>> trace, Dictionary<string, HashSet<Tuple<string, string>>> tree)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
