@@ -13,12 +13,7 @@ namespace Getter
         static string locationOfGraphList = "..\\..\\..\\..\\..\\graphs.xml";
         static void Main(string[] args)
         {
-            //XmlDocument graphs = GetGraphsWithTraces();
-            //while (true)
-            //{
-                
-            //}
-            
+            GetAndSaveGraphAndTrace();
         }
 
         private static XmlDocument GetGraphsWithTraces()
@@ -65,7 +60,7 @@ namespace Getter
 
         private static XmlDocument GetTrace(string graphId)
         {
-            HttpWebRequest request = WebRequest.Create("https://repository.dcrgraphs.net/api/graphs/"+graphId+"/sims?format=DCRXMLLog&filter=exportlog&isScenario=true") as HttpWebRequest;
+            HttpWebRequest request = WebRequest.Create("https://repository.dcrgraphs.net/api/graphs/" + graphId + "/sims?format=DCRXMLLog&filter=exportlog&isScenario=true") as HttpWebRequest;
             request.Method = "GET";
             request.Headers["Authorization"] = Authorize();
             request.ContentLength = 0;
