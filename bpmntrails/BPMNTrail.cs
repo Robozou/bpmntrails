@@ -42,13 +42,9 @@ namespace bpmntrails
             AddSequenceFlow(seqflowIdFromEvent, eventId, gateId);
             trail.process.sequenceFlows.FindAll(x => x.targetRef.Equals(eventId)).ForEach(x => x.targetRef = gateId);
             trail.process.startEvents.FindAll(x => x.outgoing.Contains(eventId)).ForEach(x => { x.outgoing.Remove(eventId); x.outgoing.Add(gateId); });
-            trail.process.endEvents.FindAll(x => x.incoming.Contains(eventId)).ForEach(x => { x.incoming.Remove(eventId); x.incoming.Add(gateId); });
             trail.process.tasks.FindAll(x => x.outgoing.Contains(eventId)).ForEach(x => { x.outgoing.Remove(eventId); x.outgoing.Add(gateId); });
-            trail.process.tasks.FindAll(x => x.incoming.Contains(eventId)).ForEach(x => { x.incoming.Remove(eventId); x.incoming.Add(gateId); });
             trail.process.exclusiveGateways.FindAll(x => x.outgoing.Contains(eventId)).ForEach(x => { x.outgoing.Remove(eventId); x.outgoing.Add(gateId); });
-            trail.process.exclusiveGateways.FindAll(x => x.incoming.Contains(eventId)).ForEach(x => { x.incoming.Remove(eventId); x.incoming.Add(gateId); });
             trail.process.parallelGateways.FindAll(x => x.outgoing.Contains(eventId)).ForEach(x => { x.outgoing.Remove(eventId); x.outgoing.Add(gateId); });
-            trail.process.parallelGateways.FindAll(x => x.incoming.Contains(eventId)).ForEach(x => { x.incoming.Remove(eventId); x.incoming.Add(gateId); });
         }
 
         public Boolean ContainsEvent(string id)
