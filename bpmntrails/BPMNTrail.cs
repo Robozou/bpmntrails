@@ -35,6 +35,14 @@ namespace bpmntrails
             }
         }
 
+        public void InsertMergeGate(string eventId, string gateId, string seqflowIdToEvent, string seqflowIdFromEvent)
+        {
+            AddExclusiveGateway(gateId, true);
+            AddSequenceFlow(seqflowIdToEvent, gateId, eventId);
+            AddSequenceFlow(seqflowIdFromEvent, eventId, gateId);
+            trail.process.sequenceFlows.FindAll(x => x.targetRef.Equals(eventId)).ForEach(x => x.targetRef = gateId);
+        }
+
         public Boolean ContainsEvent(string id)
         {
             foreach (StartEvent se in trail.process.startEvents)
@@ -117,7 +125,7 @@ namespace bpmntrails
             bPMNShape.bounds.X = placeX + "";
             bPMNShape.bounds.Y = placeY + "";
             bPMNShape.bounds.Width = SEHW + "";
-            bPMNShape.bounds.Height = SEHW+"";
+            bPMNShape.bounds.Height = SEHW + "";
             trail.diagram.bpmnPlane.bpmnShapes.Add(bPMNShape);
             UpdatePlacement();
         }
@@ -252,13 +260,13 @@ namespace bpmntrails
                 switch (sourceType)
                 {
                     case "se":
-                        first.Y = SEHW/2 + "";
+                        first.Y = SEHW / 2 + "";
                         break;
                     case "task":
-                        first.Y = TH/2 + "";
+                        first.Y = TH / 2 + "";
                         break;
                     case "gate":
-                        first.Y = GHW/2 + "";
+                        first.Y = GHW / 2 + "";
                         break;
                     default:
                         break;
@@ -266,15 +274,15 @@ namespace bpmntrails
                 switch (targetType)
                 {
                     case "se":
-                        second.Y = SEHW/2 + "";
+                        second.Y = SEHW / 2 + "";
                         second.X = SEHW + "";
                         break;
                     case "task":
-                        second.Y = TH/2 + "";
+                        second.Y = TH / 2 + "";
                         second.X = TW + "";
                         break;
                     case "gate":
-                        second.Y = GHW/2 + "";
+                        second.Y = GHW / 2 + "";
                         second.X = GHW + "";
                         break;
                     default:
