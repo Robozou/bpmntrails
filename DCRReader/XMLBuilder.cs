@@ -8,18 +8,21 @@ namespace DCRReader
     {
         int padding = 0;
         // make the trail in here
-        BPMNTrail trail = new BPMNTrail();
+        BPMNTrail trail;
         private Processor graph;
         private List<List<EventNode>> trace;
         private Dictionary<string, HashSet<Tuple<string, string>>> tree;
         private XMLOptimizer optimus;
+        private Dictionary<string, string> idLabel;
 
-        public XMLBuilder(Processor graph, List<List<EventNode>> trace)
+        public XMLBuilder(Processor graph, List<List<EventNode>> trace, Dictionary<string, string> idLabel)
         {
+            trail = new BPMNTrail();
             this.graph = graph;
             this.trace = trace;
             this.tree = new Dictionary<string, HashSet<Tuple<string, string>>>();
             this.optimus = new XMLOptimizer();
+            this.idLabel = idLabel;
         }
 
         public void Optimize()
@@ -83,7 +86,7 @@ namespace DCRReader
                 {
                     if (!trail.ContainsEvent(transition.Item2 + ""))
                     {
-                        trail.AddTask(transition.Item2 + "", transition.Item1);
+                        trail.AddTask(transition.Item2 + "", idLabel[transition.Item1]);
                     }
                 }
             }

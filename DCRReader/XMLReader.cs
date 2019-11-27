@@ -63,6 +63,15 @@ namespace DCRReader
             AddRelations(milestones, nestingEventIds, Processor.mile, xml);
             graph.Enable();
             graph.Save();
+            MakeIdLabelMapping(xml);
+        }
+
+        private void MakeIdLabelMapping(XmlDocument xml)
+        {
+            foreach(XmlElement x in xml.SelectNodes("//labelMapping"))
+            {
+                idLabel.Add(x.Attributes["eventId"].Value, x.Attributes["labelId"].Value);
+            }
         }
 
         private void AddRelations(XmlNodeList relations, List<string> nestingEventIds, string type, XmlDocument xml)
@@ -160,7 +169,7 @@ namespace DCRReader
 
         private void Build()
         {
-            builder = new XMLBuilder(graph, trace);
+            builder = new XMLBuilder(graph, trace, idLabel);
             builder.Build();
         }
     }
