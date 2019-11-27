@@ -9,9 +9,18 @@ namespace DCRReader
     public class XMLReader
     {
         // change this to parse and fill out processor
-        private List<List<EventNode>> trace = new List<List<EventNode>>();
-        private Processor graph = new Processor();
-        private XMLBuilder builder = null;
+        private List<List<EventNode>> trace;
+        private Processor graph;
+        private XMLBuilder builder;
+        private Dictionary<string, string> idLabel;
+
+        public XMLReader()
+        {
+            trace = new List<List<EventNode>>();
+            graph = new Processor();
+            builder = null;
+            idLabel = new Dictionary<string, string>();
+        }
 
         public void Read()
         {
