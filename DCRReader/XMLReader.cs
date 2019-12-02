@@ -171,6 +171,7 @@ namespace DCRReader
         {
             builder = new XMLBuilder(graph, trace, idLabel);
             builder.Build();
+            builder.Optimize();
         }
     }
 }
