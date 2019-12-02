@@ -35,8 +35,11 @@ namespace DCRReader
                 relations.ToList<Relation>().FindAll(r => r.Source == id && r.Type == resp).ForEach(r => SetPending(r.Target));
                 relations.ToList<Relation>().FindAll(r => r.Source == id && r.Type == inc).ForEach(r => SetIncluded(r.Target));
                 relations.ToList<Relation>().FindAll(r => r.Source == id && r.Type == exc).ForEach(r => SetExcluded(r.Target));
-            }
-            Enable();
+                Enable();
+            } else
+            {
+                throw new System.Exception();
+            }            
         }
 
         public void Enable()
