@@ -27,7 +27,7 @@ namespace DCRReader
 
         public void Optimize()
         {
-            optimus.Optimize(graph, trace, tree);
+            optimus.Optimize(graph, trace, tree, trail);
         }
 
         public void Print()
