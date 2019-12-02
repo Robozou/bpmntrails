@@ -32,9 +32,9 @@ namespace DCRReader
                 SetExecuted(id);
                 SetNotPending(id);
                 executionTrace.Add(id);
-                relations.ToList<Relation>().FindAll(r => r.source == id && r.type == resp).ForEach(r => SetPending(r.target));
-                relations.ToList<Relation>().FindAll(r => r.source == id && r.type == inc).ForEach(r => SetIncluded(r.target));
-                relations.ToList<Relation>().FindAll(r => r.source == id && r.type == exc).ForEach(r => SetExcluded(r.target));
+                relations.ToList<Relation>().FindAll(r => r.Source == id && r.Type == resp).ForEach(r => SetPending(r.Target));
+                relations.ToList<Relation>().FindAll(r => r.Source == id && r.Type == inc).ForEach(r => SetIncluded(r.Target));
+                relations.ToList<Relation>().FindAll(r => r.Source == id && r.Type == exc).ForEach(r => SetExcluded(r.Target));
             }
             Enable();
         }
@@ -45,18 +45,18 @@ namespace DCRReader
             events.ToList<string>().FindAll(e => !included.Contains(e)).ForEach(e => SetDisabled(e));
             foreach (Relation r in relations)
             {
-                switch (r.type)
+                switch (r.Type)
                 {
                     case cond:
-                        if (!executed.Contains(r.source))
+                        if (!executed.Contains(r.Source))
                         {
-                            SetDisabled(r.target);
+                            SetDisabled(r.Target);
                         }
                         break;
                     case mile:
-                        if (pending.Contains(r.source))
+                        if (pending.Contains(r.Source))
                         {
-                            SetDisabled(r.target);
+                            SetDisabled(r.Target);
                         }
                         break;
                 }
@@ -74,7 +74,7 @@ namespace DCRReader
 
         public void AddRelation(string target, string source, string type)
         {
-            relations.Add(new Relation { target = target, source = source, type = type });
+            relations.Add(new Relation { Target = target, Source = source, Type = type });
             Enable();
         }
 
@@ -151,8 +151,7 @@ namespace DCRReader
 
         public override bool Equals(object obj)
         {
-            var processor = obj as Processor;
-            return processor != null &&
+            return obj is Processor processor &&
                    EqualityComparer<HashSet<string>>.Default.Equals(included, processor.included) &&
                    EqualityComparer<HashSet<string>>.Default.Equals(enabled, processor.enabled) &&
                    EqualityComparer<HashSet<string>>.Default.Equals(pending, processor.pending) &&
@@ -194,8 +193,8 @@ namespace DCRReader
 
     class Relation
     {
-        public string target { get; set; }
-        public string source { get; set; }
-        public string type { get; set; }
+        public string Target { get; set; }
+        public string Source { get; set; }
+        public string Type { get; set; }
     }
 }
