@@ -15,7 +15,11 @@ namespace DCRReader
                 dict = FindRepeatingSequence(l);
                 if (dict.Keys.Count > 0)
                 {
-
+                    //test if we can execute the events in the graph if we skip the events lying in between 
+                    //the the original list and the repeats i.e. if a1 -> a2 -> a3 -> a1 -> a2 -> a4 is the original
+                    //then a1 -> a2 -> a4 must also be possible
+                    //if this is the case remove the events in the bpmn that corrosponds to the second a1 -> a2
+                    //add a merge gate infront of the first a1 -> a2 let a3 point to that and let the first a2 -> a4
                 }
             }
         }
