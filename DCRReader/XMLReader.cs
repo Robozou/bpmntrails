@@ -9,14 +9,14 @@ namespace DCRReader
     public class XMLReader
     {
         // change this to parse and fill out processor
-        private List<List<EventNode>> trace;
+        private List<List<string>> trace;
         private Processor graph;
         private XMLBuilder builder;
         private Dictionary<string, string> idLabel;
 
         public XMLReader()
         {
-            trace = new List<List<EventNode>>();
+            trace = new List<List<string>>();
             graph = new Processor();
             builder = null;
             idLabel = new Dictionary<string, string>();
@@ -158,10 +158,10 @@ namespace DCRReader
             XmlNodeList list = xml.SelectNodes("//trace[not(@type='Forbidden')]");
             foreach (XmlElement n in list)
             {
-                List<EventNode> eventList = new List<EventNode>();
+                List<string> eventList = new List<string>();
                 for (int i = 0; i < n.ChildNodes.Count; i++)
                 {
-                    eventList.Add(new EventNode { id = n.ChildNodes[i].Attributes["id"].Value, label = n.ChildNodes[i].Attributes["id"].Value });
+                    eventList.Add(n.ChildNodes[i].Attributes["id"].Value);
                 }
                 trace.Add(eventList);
             }

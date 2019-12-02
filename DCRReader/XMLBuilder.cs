@@ -10,12 +10,12 @@ namespace DCRReader
         // make the trail in here
         BPMNTrail trail;
         private Processor graph;
-        private List<List<EventNode>> trace;
+        private List<List<string>> trace;
         private Dictionary<string, HashSet<Tuple<string, string>>> tree;
         private XMLOptimizer optimus;
         private Dictionary<string, string> idLabel;
 
-        public XMLBuilder(Processor graph, List<List<EventNode>> trace, Dictionary<string, string> idLabel)
+        public XMLBuilder(Processor graph, List<List<string>> trace, Dictionary<string, string> idLabel)
         {
             trail = new BPMNTrail();
             this.graph = graph;
@@ -38,7 +38,6 @@ namespace DCRReader
         public void Build()
         {
             GrowTree();
-            graph.Load();
             trail.AddStartEvent(graph.GetHashCode() + "");
             AddTasks();
             AddFlows();
@@ -98,12 +97,12 @@ namespace DCRReader
             string id;
             string newState;
             HashSet<Tuple<string, string>> tuples;
-            foreach (List<EventNode> ls in trace)
+            foreach (List<string> ls in trace)
             {
-                foreach (EventNode n in ls)
+                foreach (string n in ls)
                 {
                     state = graph.GetHashCode();
-                    id = n.id;
+                    id = n;
                     graph.Execute(id);
                     newState = graph.GetHashCode();
                     if (!tree.ContainsKey(newState))

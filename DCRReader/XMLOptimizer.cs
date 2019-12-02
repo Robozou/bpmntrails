@@ -5,7 +5,7 @@ namespace DCRReader
 {
     class XMLOptimizer
     {
-        internal void Optimize(Processor graph, List<List<EventNode>> trace, Dictionary<string, HashSet<Tuple<string, string>>> tree)
+        internal void Optimize(Processor graph, List<List<string>> trace, Dictionary<string, HashSet<Tuple<string, string>>> tree)
         {
             throw new NotImplementedException();
         }
