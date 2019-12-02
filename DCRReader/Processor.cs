@@ -3,7 +3,9 @@ using System.Linq;
 
 namespace DCRReader
 {
+#pragma warning disable CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
     public class Processor
+#pragma warning restore CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
     {
         HashSet<string> events = new HashSet<string>();
         HashSet<Relation> relations = new HashSet<Relation>();
@@ -157,6 +159,7 @@ namespace DCRReader
                    EqualityComparer<HashSet<string>>.Default.Equals(executed, processor.executed);
         }
 
+
         //public override int GetHashCode()
         //{
         //    var hashCode = 1437070554;
@@ -166,21 +169,23 @@ namespace DCRReader
         //    hashCode = hashCode * -1521134295 + EqualityComparer<HashSet<string>>.Default.GetHashCode(pending);
         //    return hashCode;
         //}
+#pragma warning disable CS0114 // Member hides inherited member; missing override keyword
         public string GetHashCode()
+#pragma warning restore CS0114 // Member hides inherited member; missing override keyword
         {
             string hash = string.Empty;
-            List<string> inc = included.ToList<string>();
-            List<string> ena = enabled.ToList<string>();
-            List<string> pen = pending.ToList<string>();
-            List<string> exe = executed.ToList<string>();
-            inc.Sort();
-            ena.Sort();
-            pen.Sort();
-            exe.Sort();
-            inc.ForEach(s => hash += s);
-            ena.ForEach(s => hash += s);
-            pen.ForEach(s => hash += s);
-            exe.ForEach(s => hash += s);
+            //List<string> inc = included.ToList<string>();
+            //List<string> ena = enabled.ToList<string>();
+            //List<string> pen = pending.ToList<string>();
+            //List<string> exe = executed.ToList<string>();
+            //inc.Sort();
+            //ena.Sort();
+            //pen.Sort();
+            //exe.Sort();
+            //inc.ForEach(s => hash += s);
+            //ena.ForEach(s => hash += s);
+            //pen.ForEach(s => hash += s);
+            //exe.ForEach(s => hash += s);
             executionTrace.ForEach(s => hash += s);
             return hash;
         }
