@@ -116,8 +116,10 @@ namespace DCRReader
                     }
                     else
                     {
-                        tuples = new HashSet<Tuple<string, string>>();
-                        tuples.Add(new Tuple<string, string>(id, newState));
+                        tuples = new HashSet<Tuple<string, string>>
+                        {
+                            new Tuple<string, string>(id, newState)
+                        };
                     }
                     tree[state] = tuples;
                 }
