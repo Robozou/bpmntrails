@@ -7,7 +7,7 @@ namespace DCRReader
 {
     class XMLOptimizer
     {
-        internal void Optimize(Processor graph, List<List<string>> trace, Dictionary<string, HashSet<Tuple<string, string>>> tree, BPMNTrail trail)
+        internal BPMNTrail Optimize(Processor graph, List<List<string>> trace, Dictionary<string, HashSet<Tuple<string, string>>> tree, BPMNTrail trail)
         {
             Dictionary<List<string>, Tuple<int, List<int>>> dict;
             foreach (List<string> l in trace)
@@ -21,8 +21,12 @@ namespace DCRReader
                     //if this is the case remove the events in the bpmn that corrosponds to the second a1 -> a2
                     //add a merge gate infront of the first a1 -> a2 let a3 point to that and let the first a2 -> a4
                     //also find a way to handle when we have several alternating states fx a1 -> a2 -> a1 -> a2 -> ...
+
+                    
+                    
                 }
             }
+            return trail;
         }
 
         private Dictionary<List<string>, Tuple<int, List<int>>> FindRepeatingSequence(List<string> list)
