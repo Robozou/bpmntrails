@@ -180,10 +180,12 @@ namespace bpmntrails
         {
             if (!trail.process.sequenceFlows.Exists(seq => seq.sourceRef == sourceId && seq.targetRef == targetId))
             {
-                SequenceFlow sequenceFlow = new SequenceFlow();
-                sequenceFlow.id = id;
-                sequenceFlow.sourceRef = sourceId;
-                sequenceFlow.targetRef = targetId;
+                SequenceFlow sequenceFlow = new SequenceFlow
+                {
+                    id = id,
+                    sourceRef = sourceId,
+                    targetRef = targetId
+                };
                 trail.process.sequenceFlows.Add(sequenceFlow);
                 string sourceType = "";
                 string targetType = "";
