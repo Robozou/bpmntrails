@@ -27,7 +27,10 @@ namespace DCRReader
         {
             if (enabled.Contains(id))
             {
-                SetExecuted(id);
+                if (relations.ToList<Relation>().Exists(r => r.source == id && r.type == cond))
+                {
+                    SetExecuted(id);
+                }
                 SetNotPending(id);
                 executionTrace.Add(id);
                 relations.ToList<Relation>().FindAll(r => r.source == id && r.type == resp).ForEach(r => SetPending(r.target));
@@ -78,43 +81,71 @@ namespace DCRReader
 
         public void SetIncluded(string id)
         {
-            if (!events.Contains(id)) return;
+            if (!events.Contains(id))
+            {
+                return;
+            }
+
             included.Add(id);
         }
 
         public void SetExcluded(string id)
         {
-            if (!events.Contains(id)) return;
+            if (!events.Contains(id))
+            {
+                return;
+            }
+
             included.Remove(id);
         }
 
         public void SetEnabled(string id)
         {
-            if (!events.Contains(id)) return;
+            if (!events.Contains(id))
+            {
+                return;
+            }
+
             enabled.Add(id);
         }
 
         public void SetDisabled(string id)
         {
-            if (!events.Contains(id)) return;
+            if (!events.Contains(id))
+            {
+                return;
+            }
+
             enabled.Remove(id);
         }
 
         public void SetExecuted(string id)
         {
-            if (!events.Contains(id)) return;
+            if (!events.Contains(id))
+            {
+                return;
+            }
+
             executed.Add(id);
         }
 
         public void SetPending(string id)
         {
-            if (!events.Contains(id)) return;
+            if (!events.Contains(id))
+            {
+                return;
+            }
+
             pending.Add(id);
         }
 
         public void SetNotPending(string id)
         {
-            if (!events.Contains(id)) return;
+            if (!events.Contains(id))
+            {
+                return;
+            }
+
             pending.Remove(id);
         }
 
