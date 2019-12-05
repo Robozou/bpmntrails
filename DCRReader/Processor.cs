@@ -29,20 +29,18 @@ namespace DCRReader
         {
             if (enabled.Contains(id))
             {
-                if (relations.ToList<Relation>().Exists(r => r.source == id && r.type == cond))
-                {
-                    SetExecuted(id);
-                }
+                SetExecuted(id);
                 SetNotPending(id);
                 executionTrace.Add(id);
                 relations.ToList<Relation>().FindAll(r => r.Source == id && r.Type == resp).ForEach(r => SetPending(r.Target));
                 relations.ToList<Relation>().FindAll(r => r.Source == id && r.Type == inc).ForEach(r => SetIncluded(r.Target));
                 relations.ToList<Relation>().FindAll(r => r.Source == id && r.Type == exc).ForEach(r => SetExcluded(r.Target));
                 Enable();
-            } else
+            }
+            else
             {
                 throw new System.Exception();
-            }            
+            }
         }
 
         public void Enable()
