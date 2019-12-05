@@ -35,16 +35,14 @@ namespace bpmntrails
             }
         }
 
-        public void InsertMergeGate(string eventId, string gateId, string seqflowIdToEvent, string seqflowIdFromEvent)
+        public void InsertMergeGate(string eventId, string gateId, string seqflowIdToEvent)
         {
             AddExclusiveGateway(gateId, true);
+            trail.process.sequenceFlows.FindAll(x => x.targetRef.Equals(eventId)).ForEach(x => 
+                { x.targetRef = gateId; 
+                trail.process.exclusiveGateways.Find(y => y.id.Equals(gateId)).incoming.Add(x.id); 
+                trail.process.tasks.Find(z => z.id.Equals(eventId)).incoming.Remove(x.id); });
             AddSequenceFlow(seqflowIdToEvent, gateId, eventId);
-            AddSequenceFlow(seqflowIdFromEvent, eventId, gateId);
-            trail.process.sequenceFlows.FindAll(x => x.targetRef.Equals(eventId)).ForEach(x => x.targetRef = gateId);
-            trail.process.startEvents.FindAll(x => x.outgoing.Contains(eventId)).ForEach(x => { x.outgoing.Remove(eventId); x.outgoing.Add(gateId); });
-            trail.process.tasks.FindAll(x => x.outgoing.Contains(eventId)).ForEach(x => { x.outgoing.Remove(eventId); x.outgoing.Add(gateId); });
-            trail.process.exclusiveGateways.FindAll(x => x.outgoing.Contains(eventId)).ForEach(x => { x.outgoing.Remove(eventId); x.outgoing.Add(gateId); });
-            trail.process.parallelGateways.FindAll(x => x.outgoing.Contains(eventId)).ForEach(x => { x.outgoing.Remove(eventId); x.outgoing.Add(gateId); });
         }
 
         public Boolean ContainsEvent(string id)
@@ -180,19 +178,26 @@ namespace bpmntrails
         {
             if (!trail.process.sequenceFlows.Exists(seq => seq.sourceRef == sourceId && seq.targetRef == targetId))
             {
-                SequenceFlow sequenceFlow = new SequenceFlow();
-                sequenceFlow.id = id;
-                sequenceFlow.sourceRef = sourceId;
-                sequenceFlow.targetRef = targetId;
+                SequenceFlow sequenceFlow = new SequenceFlow
+                {
+                    id = id,
+                    sourceRef = sourceId,
+                    targetRef = targetId
+                };
                 trail.process.sequenceFlows.Add(sequenceFlow);
                 string sourceType = "";
                 string targetType = "";
+                int x_target = 0, x_source = 0, y_target = 0, y_source = 0;
+                Bounds b;
                 foreach (StartEvent se in trail.process.startEvents)
                 {
                     if (se.id.Equals(sourceId))
                     {
                         se.outgoing.Add(id);
                         sourceType = "se";
+                        b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(se.id + "_shape")).bounds;
+                        x_source = int.Parse(b.X);
+                        y_source = int.Parse(b.Y);
                         break;
                     }
                     else if (se.id.Equals(targetId))
@@ -207,6 +212,9 @@ namespace bpmntrails
                     {
                         ee.incoming.Add(id);
                         targetType = "se";
+                        b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(ee.id + "_shape")).bounds;
+                        x_target = int.Parse(b.X);
+                        y_target = int.Parse(b.Y);
                         break;
                     }
                     else if (ee.id.Equals(sourceId))
@@ -221,11 +229,17 @@ namespace bpmntrails
                     {
                         task.outgoing.Add(id);
                         sourceType = "task";
+                        b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(task.id + "_shape")).bounds;
+                        x_source = int.Parse(b.X);
+                        y_source = int.Parse(b.Y);
                     }
                     else if (task.id.Equals(targetId))
                     {
                         task.incoming.Add(id);
                         targetType = "task";
+                        b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(task.id + "_shape")).bounds;
+                        x_target = int.Parse(b.X);
+                        y_target = int.Parse(b.Y);
                     }
                 }
                 foreach (ParallelGateway par in trail.process.parallelGateways)
@@ -234,24 +248,36 @@ namespace bpmntrails
                     {
                         par.outgoing.Add(id);
                         sourceType = "gate";
+                        b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(par.id + "_shape")).bounds;
+                        x_source = int.Parse(b.X);
+                        y_source = int.Parse(b.Y);
                     }
                     else if (par.id.Equals(targetId))
                     {
                         par.incoming.Add(id);
                         targetType = "gate";
+                        b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(par.id + "_shape")).bounds;
+                        x_target = int.Parse(b.X);
+                        y_target = int.Parse(b.Y);
                     }
                 }
-                foreach (ExclusiveGateway inc in trail.process.exclusiveGateways)
+                foreach (ExclusiveGateway exc in trail.process.exclusiveGateways)
                 {
-                    if (inc.id.Equals(sourceId))
+                    if (exc.id.Equals(sourceId))
                     {
-                        inc.outgoing.Add(id);
+                        exc.outgoing.Add(id);
                         sourceType = "gate";
+                        b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(exc.id + "_shape")).bounds;
+                        x_source = int.Parse(b.X);
+                        y_source = int.Parse(b.Y);
                     }
-                    else if (inc.id.Equals(targetId))
+                    else if (exc.id.Equals(targetId))
                     {
-                        inc.incoming.Add(id);
+                        exc.incoming.Add(id);
                         targetType = "gate";
+                        b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(exc.id + "_shape")).bounds;
+                        x_target = int.Parse(b.X);
+                        y_target = int.Parse(b.Y);
                     }
                 }
                 BPMNEdge bPMNEdge = new BPMNEdge
@@ -264,13 +290,16 @@ namespace bpmntrails
                 switch (sourceType)
                 {
                     case "se":
-                        first.Y = SEHW / 2 + "";
+                        first.Y = SEHW / 2 + y_source + "";
+                        first.X = x_source + "";
                         break;
                     case "task":
-                        first.Y = TH / 2 + "";
+                        first.Y = TH / 2 + y_source + "";
+                        first.X = x_source + "";
                         break;
                     case "gate":
-                        first.Y = GHW / 2 + "";
+                        first.Y = GHW / 2 + y_source + "";
+                        first.X = x_source + "";
                         break;
                     default:
                         break;
@@ -278,16 +307,16 @@ namespace bpmntrails
                 switch (targetType)
                 {
                     case "se":
-                        second.Y = SEHW / 2 + "";
-                        second.X = SEHW + "";
+                        second.Y = SEHW / 2 + y_target + "";
+                        second.X = SEHW + x_target + "";
                         break;
                     case "task":
-                        second.Y = TH / 2 + "";
-                        second.X = TW + "";
+                        second.Y = TH / 2 + y_target + "";
+                        second.X = TW + x_target + "";
                         break;
                     case "gate":
-                        second.Y = GHW / 2 + "";
-                        second.X = GHW + "";
+                        second.Y = GHW / 2 + y_target + "";
+                        second.X = GHW + x_target + "";
                         break;
                     default:
                         break;

@@ -3,7 +3,9 @@ using System.Linq;
 
 namespace DCRReader
 {
+#pragma warning disable CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
     public class Processor
+#pragma warning restore CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
     {
         HashSet<string> events = new HashSet<string>();
         HashSet<Relation> relations = new HashSet<Relation>();
@@ -33,11 +35,14 @@ namespace DCRReader
                 }
                 SetNotPending(id);
                 executionTrace.Add(id);
-                relations.ToList<Relation>().FindAll(r => r.source == id && r.type == resp).ForEach(r => SetPending(r.target));
-                relations.ToList<Relation>().FindAll(r => r.source == id && r.type == inc).ForEach(r => SetIncluded(r.target));
-                relations.ToList<Relation>().FindAll(r => r.source == id && r.type == exc).ForEach(r => SetExcluded(r.target));
-            }
-            Enable();
+                relations.ToList<Relation>().FindAll(r => r.Source == id && r.Type == resp).ForEach(r => SetPending(r.Target));
+                relations.ToList<Relation>().FindAll(r => r.Source == id && r.Type == inc).ForEach(r => SetIncluded(r.Target));
+                relations.ToList<Relation>().FindAll(r => r.Source == id && r.Type == exc).ForEach(r => SetExcluded(r.Target));
+                Enable();
+            } else
+            {
+                throw new System.Exception();
+            }            
         }
 
         public void Enable()
@@ -46,18 +51,18 @@ namespace DCRReader
             events.ToList<string>().FindAll(e => !included.Contains(e)).ForEach(e => SetDisabled(e));
             foreach (Relation r in relations)
             {
-                switch (r.type)
+                switch (r.Type)
                 {
                     case cond:
-                        if (!executed.Contains(r.source))
+                        if (!executed.Contains(r.Source))
                         {
-                            SetDisabled(r.target);
+                            SetDisabled(r.Target);
                         }
                         break;
                     case mile:
-                        if (pending.Contains(r.source))
+                        if (pending.Contains(r.Source))
                         {
-                            SetDisabled(r.target);
+                            SetDisabled(r.Target);
                         }
                         break;
                 }
@@ -75,7 +80,7 @@ namespace DCRReader
 
         public void AddRelation(string target, string source, string type)
         {
-            relations.Add(new Relation { target = target, source = source, type = type });
+            relations.Add(new Relation { Target = target, Source = source, Type = type });
             Enable();
         }
 
@@ -180,13 +185,13 @@ namespace DCRReader
 
         public override bool Equals(object obj)
         {
-            var processor = obj as Processor;
-            return processor != null &&
+            return obj is Processor processor &&
                    EqualityComparer<HashSet<string>>.Default.Equals(included, processor.included) &&
                    EqualityComparer<HashSet<string>>.Default.Equals(enabled, processor.enabled) &&
                    EqualityComparer<HashSet<string>>.Default.Equals(pending, processor.pending) &&
                    EqualityComparer<HashSet<string>>.Default.Equals(executed, processor.executed);
         }
+
 
         //public override int GetHashCode()
         //{
@@ -197,21 +202,23 @@ namespace DCRReader
         //    hashCode = hashCode * -1521134295 + EqualityComparer<HashSet<string>>.Default.GetHashCode(pending);
         //    return hashCode;
         //}
+#pragma warning disable CS0114 // Member hides inherited member; missing override keyword
         public string GetHashCode()
+#pragma warning restore CS0114 // Member hides inherited member; missing override keyword
         {
             string hash = string.Empty;
-            List<string> inc = included.ToList<string>();
-            List<string> ena = enabled.ToList<string>();
-            List<string> pen = pending.ToList<string>();
-            List<string> exe = executed.ToList<string>();
-            inc.Sort();
-            ena.Sort();
-            pen.Sort();
-            exe.Sort();
-            inc.ForEach(s => hash += s);
-            ena.ForEach(s => hash += s);
-            pen.ForEach(s => hash += s);
-            exe.ForEach(s => hash += s);
+            //List<string> inc = included.ToList<string>();
+            //List<string> ena = enabled.ToList<string>();
+            //List<string> pen = pending.ToList<string>();
+            //List<string> exe = executed.ToList<string>();
+            //inc.Sort();
+            //ena.Sort();
+            //pen.Sort();
+            //exe.Sort();
+            //inc.ForEach(s => hash += s);
+            //ena.ForEach(s => hash += s);
+            //pen.ForEach(s => hash += s);
+            //exe.ForEach(s => hash += s);
             executionTrace.ForEach(s => hash += s);
             return hash;
         }
@@ -220,8 +227,8 @@ namespace DCRReader
 
     class Relation
     {
-        public string target { get; set; }
-        public string source { get; set; }
-        public string type { get; set; }
+        public string Target { get; set; }
+        public string Source { get; set; }
+        public string Type { get; set; }
     }
 }

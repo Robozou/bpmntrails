@@ -9,7 +9,6 @@ namespace Tester
         {
             XMLReader xml = new XMLReader();
             xml.Read();
-            Console.ReadLine();
         }
     }
 }

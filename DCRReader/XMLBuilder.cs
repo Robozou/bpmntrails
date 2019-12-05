@@ -8,23 +8,26 @@ namespace DCRReader
     {
         int padding = 0;
         // make the trail in here
-        BPMNTrail trail = new BPMNTrail();
+        BPMNTrail trail;
         private Processor graph;
-        private List<List<EventNode>> trace;
+        private List<List<string>> trace;
         private Dictionary<string, HashSet<Tuple<string, string>>> tree;
         private XMLOptimizer optimus;
+        private Dictionary<string, string> idLabel;
 
-        public XMLBuilder(Processor graph, List<List<EventNode>> trace)
+        public XMLBuilder(Processor graph, List<List<string>> trace, Dictionary<string, string> idLabel)
         {
+            trail = new BPMNTrail();
             this.graph = graph;
             this.trace = trace;
             this.tree = new Dictionary<string, HashSet<Tuple<string, string>>>();
             this.optimus = new XMLOptimizer();
+            this.idLabel = idLabel;
         }
 
         public void Optimize()
         {
-            optimus.Optimize(graph, trace, tree);
+            trail = optimus.Optimize(graph, trace, tree, trail);
         }
 
         public void Print()
@@ -35,7 +38,6 @@ namespace DCRReader
         public void Build()
         {
             GrowTree();
-            graph.Load();
             trail.AddStartEvent(graph.GetHashCode() + "");
             AddTasks();
             AddFlows();
@@ -83,7 +85,7 @@ namespace DCRReader
                 {
                     if (!trail.ContainsEvent(transition.Item2 + ""))
                     {
-                        trail.AddTask(transition.Item2 + "", transition.Item1);
+                        trail.AddTask(transition.Item2 + "", idLabel[transition.Item1]);
                     }
                 }
             }
@@ -95,12 +97,12 @@ namespace DCRReader
             string id;
             string newState;
             HashSet<Tuple<string, string>> tuples;
-            foreach (List<EventNode> ls in trace)
+            foreach (List<string> ls in trace)
             {
-                foreach (EventNode n in ls)
+                foreach (string n in ls)
                 {
                     state = graph.GetHashCode();
-                    id = n.id;
+                    id = n;
                     graph.Execute(id);
                     newState = graph.GetHashCode();
                     if (!tree.ContainsKey(newState))
@@ -114,8 +116,10 @@ namespace DCRReader
                     }
                     else
                     {
-                        tuples = new HashSet<Tuple<string, string>>();
-                        tuples.Add(new Tuple<string, string>(id, newState));
+                        tuples = new HashSet<Tuple<string, string>>
+                        {
+                            new Tuple<string, string>(id, newState)
+                        };
                     }
                     tree[state] = tuples;
                 }

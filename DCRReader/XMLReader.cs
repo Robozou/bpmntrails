@@ -9,9 +9,18 @@ namespace DCRReader
     public class XMLReader
     {
         // change this to parse and fill out processor
-        private List<List<EventNode>> trace = new List<List<EventNode>>();
-        private Processor graph = new Processor();
-        private XMLBuilder builder = null;
+        private List<List<string>> trace;
+        private Processor graph;
+        private XMLBuilder builder;
+        private Dictionary<string, string> idLabel;
+
+        public XMLReader()
+        {
+            trace = new List<List<string>>();
+            graph = new Processor();
+            builder = null;
+            idLabel = new Dictionary<string, string>();
+        }
 
         public void Read()
         {
@@ -54,6 +63,15 @@ namespace DCRReader
             AddRelations(milestones, nestingEventIds, Processor.mile, xml);
             graph.Enable();
             graph.Save();
+            MakeIdLabelMapping(xml);
+        }
+
+        private void MakeIdLabelMapping(XmlDocument xml)
+        {
+            foreach(XmlElement x in xml.SelectNodes("//labelMapping"))
+            {
+                idLabel.Add(x.Attributes["eventId"].Value, x.Attributes["labelId"].Value);
+            }
         }
 
         private void AddRelations(XmlNodeList relations, List<string> nestingEventIds, string type, XmlDocument xml)
@@ -140,10 +158,10 @@ namespace DCRReader
             XmlNodeList list = xml.SelectNodes("//trace[not(@type='Forbidden')]");
             foreach (XmlElement n in list)
             {
-                List<EventNode> eventList = new List<EventNode>();
+                List<string> eventList = new List<string>();
                 for (int i = 0; i < n.ChildNodes.Count; i++)
                 {
-                    eventList.Add(new EventNode { id = n.ChildNodes[i].Attributes["id"].Value, label = n.ChildNodes[i].Attributes["id"].Value });
+                    eventList.Add(n.ChildNodes[i].Attributes["id"].Value);
                 }
                 trace.Add(eventList);
             }
@@ -151,8 +169,9 @@ namespace DCRReader
 
         private void Build()
         {
-            builder = new XMLBuilder(graph, trace);
+            builder = new XMLBuilder(graph, trace, idLabel);
             builder.Build();
+            builder.Optimize();
         }
     }
 }
