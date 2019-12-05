@@ -9,7 +9,7 @@ namespace Getter
     class Program
     {
         static string[] lines = File.ReadAllLines("..\\..\\..\\..\\..\\login.txt");
-        static string testgraph = "4013";
+        static string testgraph = "13709";
         static string locationOfGraphList = "..\\..\\..\\..\\..\\graphs.xml";
         static void Main(string[] args)
         {
