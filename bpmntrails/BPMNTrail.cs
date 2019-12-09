@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
 
@@ -35,13 +36,32 @@ namespace bpmntrails
             }
         }
 
+        public Boolean HasMergeGate(string eventId)
+        {
+            List<SequenceFlow> seqList = trail.process.sequenceFlows.FindAll(x => x.targetRef.Equals(eventId));
+            List<ExclusiveGateway> mergeList = trail.process.exclusiveGateways.FindAll(x => x.gatewayDirection.Equals("Converging"));
+            foreach (ExclusiveGateway eg in mergeList)
+            {
+                foreach (SequenceFlow seq in seqList)
+                {
+                    if (eg.id.Equals(seq.sourceRef))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         public void InsertMergeGate(string eventId, string gateId, string seqflowIdToEvent)
         {
             AddExclusiveGateway(gateId, true);
-            trail.process.sequenceFlows.FindAll(x => x.targetRef.Equals(eventId)).ForEach(x => 
-                { x.targetRef = gateId; 
-                trail.process.exclusiveGateways.Find(y => y.id.Equals(gateId)).incoming.Add(x.id); 
-                trail.process.tasks.Find(z => z.id.Equals(eventId)).incoming.Remove(x.id); });
+            trail.process.sequenceFlows.FindAll(x => x.targetRef.Equals(eventId)).ForEach(x =>
+                {
+                    x.targetRef = gateId;
+                    trail.process.exclusiveGateways.Find(y => y.id.Equals(gateId)).incoming.Add(x.id);
+                    trail.process.tasks.Find(z => z.id.Equals(eventId)).incoming.Remove(x.id);
+                });
             AddSequenceFlow(seqflowIdToEvent, gateId, eventId);
         }
 
