@@ -469,6 +469,14 @@ namespace bpmntrails
             }
         }
 
+        public Definition Definition
+        {
+            get
+            {
+                return trail;
+            }
+        }
+
         public void PrintTrail()
         {
             XmlSerializer serial = new XmlSerializer(typeof(Definition));
