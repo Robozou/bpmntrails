@@ -36,6 +36,80 @@ namespace bpmntrails
             }
         }
 
+        public void RemoveEvent(string eventId)
+        {
+            foreach (StartEvent se in trail.process.startEvents)
+            {
+                if (se.id.Equals(eventId))
+                {
+                    foreach (string outseq in se.outgoing)
+                    {
+                        trail.process.sequenceFlows.RemoveAll(x => x.id.Equals(outseq));
+                        trail.diagram.bpmnPlane.bpmnEdges.RemoveAll(x => x.id.Equals(outseq + "_edge"));
+                    }
+                }
+            }
+            foreach (EndEvent ee in trail.process.endEvents)
+            {
+                if (ee.id.Equals(eventId))
+                {
+                    foreach (string inseq in ee.incoming)
+                    {
+                        trail.process.sequenceFlows.RemoveAll(x => x.id.Equals(inseq));
+                        trail.diagram.bpmnPlane.bpmnEdges.RemoveAll(x => x.id.Equals(inseq + "_edge"));
+                    }
+                }
+            }
+            foreach (Task t in trail.process.tasks)
+            {
+                if (t.id.Equals(eventId))
+                {
+                    foreach (string outseq in t.outgoing)
+                    {
+                        trail.process.sequenceFlows.RemoveAll(x => x.id.Equals(outseq));
+                        trail.diagram.bpmnPlane.bpmnEdges.RemoveAll(x => x.id.Equals(outseq + "_edge"));
+                    }
+                    foreach (string inseq in t.incoming)
+                    {
+                        trail.process.sequenceFlows.RemoveAll(x => x.id.Equals(inseq));
+                        trail.diagram.bpmnPlane.bpmnEdges.RemoveAll(x => x.id.Equals(inseq + "_edge"));
+                    }
+                }
+            }
+            foreach (ParallelGateway pg in trail.process.parallelGateways)
+            {
+                if (pg.id.Equals(eventId))
+                {
+                    foreach (string outseq in pg.outgoing)
+                    {
+                        trail.process.sequenceFlows.RemoveAll(x => x.id.Equals(outseq));
+                        trail.diagram.bpmnPlane.bpmnEdges.RemoveAll(x => x.id.Equals(outseq + "_edge"));
+                    }
+                    foreach (string inseq in pg.incoming)
+                    {
+                        trail.process.sequenceFlows.RemoveAll(x => x.id.Equals(inseq));
+                        trail.diagram.bpmnPlane.bpmnEdges.RemoveAll(x => x.id.Equals(inseq + "_edge"));
+                    }
+                }
+            }
+            foreach (ExclusiveGateway eg in trail.process.exclusiveGateways)
+            {
+                if (eg.id.Equals(eventId))
+                {
+                    foreach (string outseq in eg.outgoing)
+                    {
+                        trail.process.sequenceFlows.RemoveAll(x => x.id.Equals(outseq));
+                        trail.diagram.bpmnPlane.bpmnEdges.RemoveAll(x => x.id.Equals(outseq + "_edge"));
+                    }
+                    foreach (string inseq in eg.incoming)
+                    {
+                        trail.process.sequenceFlows.RemoveAll(x => x.id.Equals(inseq));
+                        trail.diagram.bpmnPlane.bpmnEdges.RemoveAll(x => x.id.Equals(inseq + "_edge"));
+                    }
+                }
+            }
+        }
+
         public Boolean HasMergeGate(string eventId)
         {
             List<SequenceFlow> seqList = trail.process.sequenceFlows.FindAll(x => x.targetRef.Equals(eventId));
