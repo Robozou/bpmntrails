@@ -10,6 +10,7 @@ namespace DCRReader
         private Processor graph;
         private XMLBuilder builder;
         private Dictionary<string, string> idLabel;
+        private Dictionary<string, string> labelId;
 
         public XMLReader()
         {
@@ -17,6 +18,7 @@ namespace DCRReader
             graph = new Processor();
             builder = null;
             idLabel = new Dictionary<string, string>();
+            labelId = new Dictionary<string, string>();
         }
 
         public void Read()
@@ -68,6 +70,7 @@ namespace DCRReader
             foreach (XmlElement x in xml.SelectNodes("//labelMapping"))
             {
                 idLabel.Add(x.Attributes["eventId"].Value, x.Attributes["labelId"].Value);
+                labelId.Add(x.Attributes["labelId"].Value, x.Attributes["eventId"].Value);
             }
         }
 
@@ -166,7 +169,7 @@ namespace DCRReader
 
         private void Build()
         {
-            builder = new XMLBuilder(graph, trace, idLabel);
+            builder = new XMLBuilder(graph, trace, idLabel, labelId);
             builder.Build();
             builder.Optimize();
         }
