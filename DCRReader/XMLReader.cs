@@ -1,8 +1,5 @@
-﻿using bpmntrails;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Xml;
-using System.Linq;
 
 namespace DCRReader
 {
@@ -45,7 +42,7 @@ namespace DCRReader
             XmlNodeList events = xml.SelectNodes("//events//event[not(@type='nesting')]");
             XmlNodeList nestingEvents = xml.SelectNodes("//events//event[@type='nesting']");
             List<string> nestingEventIds = new List<string>();
-            foreach(XmlElement n in nestingEvents)
+            foreach (XmlElement n in nestingEvents)
             {
                 nestingEventIds.Add(n.Attributes["id"].Value);
             }
@@ -68,7 +65,7 @@ namespace DCRReader
 
         private void MakeIdLabelMapping(XmlDocument xml)
         {
-            foreach(XmlElement x in xml.SelectNodes("//labelMapping"))
+            foreach (XmlElement x in xml.SelectNodes("//labelMapping"))
             {
                 idLabel.Add(x.Attributes["eventId"].Value, x.Attributes["labelId"].Value);
             }
@@ -88,9 +85,9 @@ namespace DCRReader
             {
                 XmlNodeList ls = xml.SelectNodes("//events//event[id='" + source + "']");
                 XmlNodeList lt = xml.SelectNodes("//events//event[id='" + target + "']");
-                foreach(XmlElement s in ls)
+                foreach (XmlElement s in ls)
                 {
-                    foreach(XmlElement t in lt)
+                    foreach (XmlElement t in lt)
                     {
                         AddRelation(s.Attributes["id"].Value, t.Attributes["id"].Value, nestingEventIds, type, xml);
                     }
@@ -100,7 +97,7 @@ namespace DCRReader
             else if (nestingEventIds.Contains(source))
             {
                 XmlNodeList ls = xml.SelectNodes("//events//event[id='" + source + "']");
-                foreach(XmlElement s in ls)
+                foreach (XmlElement s in ls)
                 {
                     AddRelation(s.Attributes["id"].Value, target, nestingEventIds, type, xml);
                 }
