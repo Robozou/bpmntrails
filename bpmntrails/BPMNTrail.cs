@@ -36,7 +36,43 @@ namespace bpmntrails
             }
         }
 
-        public void RemoveEvent(string eventId)
+        public void AddBackLoopingSequence(string mergeGateId, string eventId, string seqFlowBackLoopId)
+        {
+            Task task = trail.process.tasks.Find(x => x.id.Equals(eventId));
+            if (task != null)
+            {
+                string incId = task.incoming[0];
+                SequenceFlow incSeq = trail.process.sequenceFlows.Find(x => x.id.Equals(incId));
+                string source = incSeq.sourceRef;
+                if (trail.process.exclusiveGateways.Exists(x => x.id.Equals(source)))
+                {
+                    AddSequenceFlow(seqFlowBackLoopId, source, mergeGateId);
+                }
+                else if (trail.process.tasks.Exists(x => x.id.Equals(source)))
+                {
+                    InsertExclusiveGate(eventId, mergeGateId + eventId + seqFlowBackLoopId, seqFlowBackLoopId + mergeGateId + eventId);
+                    AddSequenceFlow(seqFlowBackLoopId, mergeGateId + eventId + seqFlowBackLoopId, mergeGateId);
+                }
+            }
+        }
+
+        public void RemoveTaskAndMoveSequences(string eventId)
+        {
+            Task task = trail.process.tasks.Find(x => x.id.Equals(eventId));
+            if (task != null)
+            {
+                string incId = task.incoming[0];
+                string outId = task.outgoing[0];
+                SequenceFlow incSeq = trail.process.sequenceFlows.Find(x => x.id.Equals(incId));
+                SequenceFlow outSeq = trail.process.sequenceFlows.Find(x => x.id.Equals(outId));
+                string source = incSeq.sourceRef;
+                string target = outSeq.sourceRef;
+                RemoveEventWithSequences(eventId);
+                AddSequenceFlow(incId, source, target);
+            }
+        }
+
+        public void RemoveEventWithSequences(string eventId)
         {
             foreach (StartEvent se in trail.process.startEvents)
             {
@@ -136,6 +172,18 @@ namespace bpmntrails
                     trail.process.exclusiveGateways.Find(y => y.id.Equals(gateId)).incoming.Add(x.id);
                     trail.process.tasks.Find(z => z.id.Equals(eventId)).incoming.Remove(x.id);
                 });
+            AddSequenceFlow(seqflowIdToEvent, gateId, eventId);
+        }
+
+        public void InsertExclusiveGate(string eventId, string gateId, string seqflowIdToEvent)
+        {
+            AddExclusiveGateway(gateId, false);
+            trail.process.sequenceFlows.FindAll(x => x.targetRef.Equals(eventId)).ForEach(x =>
+            {
+                x.targetRef = gateId;
+                trail.process.exclusiveGateways.Find(y => y.id.Equals(gateId)).incoming.Add(x.id);
+                trail.process.tasks.Find(z => z.id.Equals(eventId)).incoming.Remove(x.id);
+            });
             AddSequenceFlow(seqflowIdToEvent, gateId, eventId);
         }
 
