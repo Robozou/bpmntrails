@@ -11,6 +11,7 @@ namespace DCRReader
         internal BPMNTrail Optimize(Processor graph, List<List<string>> trace, Dictionary<string, HashSet<Tuple<string, string>>> tree, BPMNTrail trail)
         {
             Dictionary<List<string>, Tuple<int, List<int>>> dict;
+            Dictionary<string, string> idGate = new Dictionary<string, string>();
             foreach (List<string> l in trace)
             {
                 dict = FindRepeatingSequence(l);
@@ -27,13 +28,16 @@ namespace DCRReader
                     foreach (List<string> ls in dict.Keys)
                     {
                         string eventId = String.Empty;
+                        string gateId = String.Empty;
                         for (int i = 0; i < dict[ls].Item1; i++)
                         {
                             eventId += l[i];
                         }
-                        if (!eventId.Equals(String.Empty))
+                        if (!eventId.Equals(String.Empty) && !idGate.Keys.Contains(eventId))
                         {
-                            trail.InsertMergeGate(eventId, "mergeGate" + buffer, "seqflowgateevent" + buffer);
+                            gateId = "mergeGate" + buffer;
+                            trail.InsertMergeGate(eventId, gateId, "seqflowgateevent" + buffer);
+                            idGate[eventId] = gateId;
                             buffer++;
                         }
                     }
