@@ -29,7 +29,7 @@ namespace DCRReader
 
         public void Optimize()
         {
-            trail = optimus.Optimize(graph, trace, tree, trail);
+            trail = optimus.Optimize(graph, trace, tree, trail, labelId);
         }
 
         public void Print()

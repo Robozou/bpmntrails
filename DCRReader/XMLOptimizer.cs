@@ -8,10 +8,11 @@ namespace DCRReader
     class XMLOptimizer
     {
         int buffer = 0;
-        internal BPMNTrail Optimize(Processor graph, List<List<string>> trace, Dictionary<string, HashSet<Tuple<string, string>>> tree, BPMNTrail trail)
+        internal BPMNTrail Optimize(Processor graph, List<List<string>> trace, Dictionary<string, HashSet<Tuple<string, string>>> tree, BPMNTrail trail, Dictionary<string, string> labelId)
         {
             Dictionary<List<string>, Tuple<int, List<int>>> dict;
             Dictionary<string, string> idGate = new Dictionary<string, string>();
+            Validator validator = new Validator(graph, trail, labelId);
             foreach (List<string> l in trace)
             {
                 dict = FindRepeatingSequence(l);
@@ -25,6 +26,9 @@ namespace DCRReader
                     //if this is the case remove the events in the bpmn that corrosponds to the second a1 -> a2
                     //add a merge gate infront of the first a1 -> a2 let a3 point to that and let the first a2 -> a4
                     //also find a way to handle when we have several alternating states fx a1 -> a2 -> a1 -> a2 -> ...
+                    //test that all new executions that may result from the change is still valid in dcr
+                    //collapse diverging gates if chained
+                    //finally sweep and remove any merge/xor gates with a 1:1 in/out
                     foreach (List<string> ls in dict.Keys)
                     {
                         string eventId = String.Empty;
@@ -38,6 +42,9 @@ namespace DCRReader
                             gateId = "mergeGate" + buffer;
                             trail.InsertMergeGate(eventId, gateId, "seqflowgateevent" + buffer);
                             idGate[eventId] = gateId;
+
+
+
                             buffer++;
                         }
                     }
