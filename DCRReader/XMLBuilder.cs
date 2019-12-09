@@ -14,15 +14,17 @@ namespace DCRReader
         private Dictionary<string, HashSet<Tuple<string, string>>> tree;
         private XMLOptimizer optimus;
         private Dictionary<string, string> idLabel;
+        private Dictionary<string, string> labelId;
 
-        public XMLBuilder(Processor graph, List<List<string>> trace, Dictionary<string, string> idLabel)
+        public XMLBuilder(Processor graph, List<List<string>> trace, Dictionary<string, string> idLabel, Dictionary<string, string> labelId)
         {
             trail = new BPMNTrail();
             this.graph = graph;
             this.trace = trace;
-            this.tree = new Dictionary<string, HashSet<Tuple<string, string>>>();
-            this.optimus = new XMLOptimizer();
+            tree = new Dictionary<string, HashSet<Tuple<string, string>>>();
+            optimus = new XMLOptimizer();
             this.idLabel = idLabel;
+            this.labelId = labelId;
         }
 
         public void Optimize()
