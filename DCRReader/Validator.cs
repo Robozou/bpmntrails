@@ -11,16 +11,16 @@ namespace DCRReader
         BPMNTrail trail;
         Dictionary<string, string> labelId;
         List<bool> results;
-        public Validator(Processor graph, BPMNTrail trail, Dictionary<string, string> labelId)
+        public Validator(Processor graph, Dictionary<string, string> labelId)
         {
             this.graph = graph;
-            this.trail = trail;
             this.labelId = labelId;
             results = new List<bool>();
         }
 
-        public bool Validate()
+        public bool Validate(BPMNTrail trail)
         {
+            this.trail = trail;
             StartEvent se = trail.Definition.process.startEvents[0];
             RunStates(se, graph);
             return results.TrueForAll(x => x.Equals(true));
@@ -52,7 +52,7 @@ namespace DCRReader
                         RunStates(trail.Definition.process.sequenceFlows.Find(x => x.id.Equals(seqId)), graph);
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     results.Add(false);
                 }
