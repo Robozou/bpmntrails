@@ -7,6 +7,7 @@ namespace DCRReader
     //needs to visit each edge atleast once to see if traces expressed in bpmn is valid in dcr.
     public class Validator
     {
+        //Maybe check to see if there are disconnected bpmn events
         Processor graph;
         BPMNTrail trail;
         Dictionary<string, string> labelId;
