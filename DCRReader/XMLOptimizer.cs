@@ -12,7 +12,9 @@ namespace DCRReader
         {
             Dictionary<List<string>, Tuple<int, List<int>>> dict;
             Dictionary<string, string> idGate = new Dictionary<string, string>();
-            Validator validator = new Validator(graph, trail, labelId);
+            Validator validator = new Validator(graph, labelId);
+            BPMNTrail workingTrail = trail;
+            BPMNTrail oldTrail;
             foreach (List<string> l in trace)
             {
                 dict = FindRepeatingSequence(l);
@@ -29,8 +31,12 @@ namespace DCRReader
                     //test that all new executions that may result from the change is still valid in dcr
                     //collapse diverging gates if chained
                     //finally sweep and remove any merge/xor gates with a 1:1 in/out
+
+                    //Maybe take longest found repeating sequence do the thing, and then rerun the finder etc.
+                    
                     foreach (List<string> ls in dict.Keys)
                     {
+                        
                         string eventId = String.Empty;
                         string gateId = String.Empty;
                         for (int i = 0; i < dict[ls].Item1; i++)
@@ -39,13 +45,33 @@ namespace DCRReader
                         }
                         if (!eventId.Equals(String.Empty) && !idGate.Keys.Contains(eventId))
                         {
+                            oldTrail = workingTrail;
                             gateId = "mergeGate" + buffer;
-                            trail.InsertMergeGate(eventId, gateId, "seqflowgateevent" + buffer);
+                            workingTrail.InsertMergeGate(eventId, gateId, "seqflowgateevent" + buffer);
                             idGate[eventId] = gateId;
 
-
+                            foreach (int pos in dict[ls].Item2)
+                            {
+                                string doubleEventId = String.Empty;
+                                List<string> ids = new List<string>();
+                                for (int i = 0; i < pos + ls.Count; i++)
+                                {
+                                    doubleEventId += l[i];
+                                    if (i >= pos) ids.Add(doubleEventId);
+                                }
+                                workingTrail.AddBackLoopingSequence(gateId, ids[0], "backLoopSeqFlow" + buffer);
+                                foreach (string id in ids)
+                                {
+                                    workingTrail.RemoveTaskAndMoveSequences(id);
+                                }
+                            }
 
                             buffer++;
+
+                            if (!validator.Validate(workingTrail))
+                            {
+                                workingTrail = oldTrail;
+                            }
                         }
                     }
 
@@ -53,7 +79,7 @@ namespace DCRReader
 
                 }
             }
-            return trail;
+            return workingTrail;
         }
 
         private Dictionary<List<string>, Tuple<int, List<int>>> FindRepeatingSequence(List<string> list)
