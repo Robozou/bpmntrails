@@ -21,11 +21,11 @@ namespace DCRReader
             labelId = new Dictionary<string, string>();
         }
 
-        public void Read()
+        public void Read(bool optimize = false)
         {
             ReadTraces();
             ReadGraph();
-            Build();
+            Build(optimize);
             Print();
         }
 
@@ -167,11 +167,11 @@ namespace DCRReader
             }
         }
 
-        private void Build()
+        private void Build(bool optimize)
         {
             builder = new XMLBuilder(graph, trace, idLabel, labelId);
             builder.Build();
-            builder.Optimize();
+            if (optimize) builder.Optimize();
         }
     }
 }
