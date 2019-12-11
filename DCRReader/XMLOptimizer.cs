@@ -81,23 +81,21 @@ namespace DCRReader
                             gateId = "mergeGate" + buffer;
                             workingTrail.InsertMergeGate(eventId, gateId, "seqflowgateevent" + buffer);
                             idGate[eventId] = gateId;
-
+                            List<string> ids = new List<string>();
                             foreach (int pos in dict[ls].Item2)
                             {
                                 string doubleEventId = String.Empty;
-                                List<string> ids = new List<string>();
                                 for (int i = 0; i < pos + ls.Count; i++)
                                 {
                                     doubleEventId += l[i];
                                     if (i >= pos) ids.Add(doubleEventId);
                                 }
-                                workingTrail.AddBackLoopingSequence(gateId, ids[0], "backLoopSeqFlow" + buffer);
-                                foreach (string id in ids)
-                                {
-                                    workingTrail.RemoveTaskAndMoveSequences(id);
-                                }
                             }
-
+                            workingTrail.AddBackLoopingSequence(gateId, ids[0], "backLoopSeqFlow" + buffer);
+                            foreach (string id in ids)
+                            {
+                                workingTrail.RemoveTaskAndMoveSequences(id);
+                            }
                             buffer++;
 
                             if (!validator.Validate(workingTrail))
