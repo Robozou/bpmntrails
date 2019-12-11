@@ -40,7 +40,7 @@ namespace DCRReader
         public void Build()
         {
             GrowTree();
-            trail.AddStartEvent(graph.GetHashCode() + "");
+            trail.AddStartEvent("start");
             AddTasks();
             AddFlows();
         }
