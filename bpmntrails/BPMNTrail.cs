@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
+using System.Linq;
 
 namespace bpmntrails
 {
@@ -57,7 +58,7 @@ namespace bpmntrails
                 }
             }
         }
-
+        //DEBUG THIS
         public void RemoveTaskAndMoveSequences(string eventId)
         {
             Task task = trail.process.tasks.Find(x => x.id.Equals(eventId));
@@ -76,9 +77,10 @@ namespace bpmntrails
                 }
             }
         }
-
+        //NEEDS REFACTORING BADLY
         private void RemoveEventWithSequences(string eventId)
         {
+            List<StartEvent> sel = new List<StartEvent>();
             foreach (StartEvent se in trail.process.startEvents)
             {
                 if (se.id.Equals(eventId))
@@ -86,10 +88,18 @@ namespace bpmntrails
                     foreach (string outseq in se.outgoing)
                     {
                         trail.process.sequenceFlows.RemoveAll(x => x.id.Equals(outseq));
+                        trail.process.endEvents.ForEach(x => x.incoming.Remove(outseq));
+                        trail.process.tasks.ForEach(x => x.incoming.Remove(outseq));
+                        trail.process.exclusiveGateways.ForEach(x => x.incoming.Remove(outseq));
+                        trail.process.parallelGateways.ForEach(x => x.incoming.Remove(outseq));
                         trail.diagram.bpmnPlane.bpmnEdges.RemoveAll(x => x.id.Equals(outseq + "_edge"));
                     }
+                    sel.Add(se);
                 }
             }
+            sel.ForEach(x => trail.process.startEvents.RemoveAll(y => y.id.Equals(x.id)));
+            sel.ForEach(x => trail.diagram.bpmnPlane.bpmnShapes.RemoveAll(y => y.id.Equals(x.id + "_shape")));
+            List<EndEvent> eel = new List<EndEvent>();
             foreach (EndEvent ee in trail.process.endEvents)
             {
                 if (ee.id.Equals(eventId))
@@ -97,10 +107,18 @@ namespace bpmntrails
                     foreach (string inseq in ee.incoming)
                     {
                         trail.process.sequenceFlows.RemoveAll(x => x.id.Equals(inseq));
+                        trail.process.startEvents.ForEach(x => x.outgoing.Remove(inseq));
+                        trail.process.tasks.ForEach(x => x.outgoing.Remove(inseq));
+                        trail.process.exclusiveGateways.ForEach(x => x.outgoing.Remove(inseq));
+                        trail.process.parallelGateways.ForEach(x => x.outgoing.Remove(inseq));
                         trail.diagram.bpmnPlane.bpmnEdges.RemoveAll(x => x.id.Equals(inseq + "_edge"));
                     }
+                    eel.Add(ee);
                 }
             }
+            eel.ForEach(x => trail.process.endEvents.RemoveAll(y => y.id.Equals(x.id)));
+            eel.ForEach(x => trail.diagram.bpmnPlane.bpmnShapes.RemoveAll(y => y.id.Equals(x.id + "_shape")));
+            List<Task> tl = new List<Task>();
             foreach (Task t in trail.process.tasks)
             {
                 if (t.id.Equals(eventId))
@@ -108,15 +126,27 @@ namespace bpmntrails
                     foreach (string outseq in t.outgoing)
                     {
                         trail.process.sequenceFlows.RemoveAll(x => x.id.Equals(outseq));
+                        trail.process.endEvents.ForEach(x => x.incoming.Remove(outseq));
+                        trail.process.tasks.ForEach(x => x.incoming.Remove(outseq));
+                        trail.process.exclusiveGateways.ForEach(x => x.incoming.Remove(outseq));
+                        trail.process.parallelGateways.ForEach(x => x.incoming.Remove(outseq));
                         trail.diagram.bpmnPlane.bpmnEdges.RemoveAll(x => x.id.Equals(outseq + "_edge"));
                     }
                     foreach (string inseq in t.incoming)
                     {
                         trail.process.sequenceFlows.RemoveAll(x => x.id.Equals(inseq));
+                        trail.process.startEvents.ForEach(x => x.outgoing.Remove(inseq));
+                        trail.process.tasks.ForEach(x => x.outgoing.Remove(inseq));
+                        trail.process.exclusiveGateways.ForEach(x => x.outgoing.Remove(inseq));
+                        trail.process.parallelGateways.ForEach(x => x.outgoing.Remove(inseq));
                         trail.diagram.bpmnPlane.bpmnEdges.RemoveAll(x => x.id.Equals(inseq + "_edge"));
                     }
+                    tl.Add(t);
                 }
             }
+            tl.ForEach(x => trail.process.tasks.RemoveAll(y => y.id.Equals(x.id)));
+            tl.ForEach(x => trail.diagram.bpmnPlane.bpmnShapes.RemoveAll(y => y.id.Equals(x.id + "_shape")));
+            List<ParallelGateway> pgl = new List<ParallelGateway>();
             foreach (ParallelGateway pg in trail.process.parallelGateways)
             {
                 if (pg.id.Equals(eventId))
@@ -124,15 +154,27 @@ namespace bpmntrails
                     foreach (string outseq in pg.outgoing)
                     {
                         trail.process.sequenceFlows.RemoveAll(x => x.id.Equals(outseq));
+                        trail.process.endEvents.ForEach(x => x.incoming.Remove(outseq));
+                        trail.process.tasks.ForEach(x => x.incoming.Remove(outseq));
+                        trail.process.exclusiveGateways.ForEach(x => x.incoming.Remove(outseq));
+                        trail.process.parallelGateways.ForEach(x => x.incoming.Remove(outseq));
                         trail.diagram.bpmnPlane.bpmnEdges.RemoveAll(x => x.id.Equals(outseq + "_edge"));
                     }
                     foreach (string inseq in pg.incoming)
                     {
                         trail.process.sequenceFlows.RemoveAll(x => x.id.Equals(inseq));
+                        trail.process.startEvents.ForEach(x => x.outgoing.Remove(inseq));
+                        trail.process.tasks.ForEach(x => x.outgoing.Remove(inseq));
+                        trail.process.exclusiveGateways.ForEach(x => x.outgoing.Remove(inseq));
+                        trail.process.parallelGateways.ForEach(x => x.outgoing.Remove(inseq));
                         trail.diagram.bpmnPlane.bpmnEdges.RemoveAll(x => x.id.Equals(inseq + "_edge"));
                     }
+                    pgl.Add(pg);
                 }
             }
+            pgl.ForEach(x => trail.process.parallelGateways.RemoveAll(y => y.id.Equals(x.id)));
+            pgl.ForEach(x => trail.diagram.bpmnPlane.bpmnShapes.RemoveAll(y => y.id.Equals(x.id + "_shape")));
+            List<ExclusiveGateway> egl = new List<ExclusiveGateway>();
             foreach (ExclusiveGateway eg in trail.process.exclusiveGateways)
             {
                 if (eg.id.Equals(eventId))
@@ -140,15 +182,26 @@ namespace bpmntrails
                     foreach (string outseq in eg.outgoing)
                     {
                         trail.process.sequenceFlows.RemoveAll(x => x.id.Equals(outseq));
+                        trail.process.endEvents.ForEach(x => x.incoming.Remove(outseq));
+                        trail.process.tasks.ForEach(x => x.incoming.Remove(outseq));
+                        trail.process.exclusiveGateways.ForEach(x => x.incoming.Remove(outseq));
+                        trail.process.parallelGateways.ForEach(x => x.incoming.Remove(outseq));
                         trail.diagram.bpmnPlane.bpmnEdges.RemoveAll(x => x.id.Equals(outseq + "_edge"));
                     }
                     foreach (string inseq in eg.incoming)
                     {
                         trail.process.sequenceFlows.RemoveAll(x => x.id.Equals(inseq));
+                        trail.process.startEvents.ForEach(x => x.outgoing.Remove(inseq));
+                        trail.process.tasks.ForEach(x => x.outgoing.Remove(inseq));
+                        trail.process.exclusiveGateways.ForEach(x => x.outgoing.Remove(inseq));
+                        trail.process.parallelGateways.ForEach(x => x.outgoing.Remove(inseq));
                         trail.diagram.bpmnPlane.bpmnEdges.RemoveAll(x => x.id.Equals(inseq + "_edge"));
                     }
+                    egl.Add(eg);
                 }
             }
+            egl.ForEach(x => trail.process.exclusiveGateways.RemoveAll(y => y.id.Equals(x.id)));
+            egl.ForEach(x => trail.diagram.bpmnPlane.bpmnShapes.RemoveAll(y => y.id.Equals(x.id + "_shape")));
         }
 
         public Boolean HasMergeGate(string eventId)
