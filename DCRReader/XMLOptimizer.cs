@@ -1,6 +1,7 @@
 ﻿using bpmntrails;
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 
 namespace DCRReader
@@ -33,7 +34,38 @@ namespace DCRReader
                     //finally sweep and remove any merge/xor gates with a 1:1 in/out
 
                     //Maybe take longest found repeating sequence do the thing, and then rerun the finder etc.
-                    
+
+                    if (dict.Keys.Count > 1)
+                    {
+                        List<List<string>> subs = new List<List<string>>();
+                        foreach(List<string> ls in dict.Keys)
+                        {
+                            List<List<string>> others = dict.Keys.ToList().FindAll(x => !x.Equals(ls));
+                            foreach(List<string> other in others)
+                            {
+                                if (other.Count > ls.Count)
+                                {
+                                    for(int i = 0; i+ls.Count<other.Count; i++)
+                                    {
+                                        List<string> news = other.GetRange(i, ls.Count);
+                                        if (news.SequenceEqual(ls))
+                                        {
+                                            subs.Add(ls);
+                                        }
+                                    }
+                                }
+                                if (ls.Count + dict[ls].Item1 >= dict[other].Item1 && dict[ls].Item1<dict[other].Item1)
+                                {
+                                    subs.Add(other);
+                                }
+                            }
+                        }
+                        foreach(List<string> ls in subs)
+                        {
+                            dict.Remove(ls);
+                        }
+                    }
+
                     foreach (List<string> ls in dict.Keys)
                     {
                         
