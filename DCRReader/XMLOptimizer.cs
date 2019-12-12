@@ -71,7 +71,7 @@ namespace DCRReader
                         
                         string eventId = String.Empty;
                         string gateId = String.Empty;
-                        for (int i = 0; i < dict[ls].Item1; i++)
+                        for (int i = 0; i <= dict[ls].Item1; i++)
                         {
                             eventId += l[i];
                         }
