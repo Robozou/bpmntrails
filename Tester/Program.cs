@@ -8,7 +8,7 @@ namespace Tester
         static void Main(string[] args)
         {
             XMLReader xml = new XMLReader();
-            xml.Read();
+            xml.Read(true);
         }
     }
 }
