@@ -71,7 +71,7 @@ namespace bpmntrails
                 if (incSeq != null && outSeq != null)
                 {
                     string source = incSeq.sourceRef;
-                    string target = outSeq.sourceRef;
+                    string target = outSeq.targetRef;
                     RemoveEventWithSequences(eventId);
                     AddSequenceFlow(incId, source, target);
                 }
