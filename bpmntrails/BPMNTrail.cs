@@ -78,7 +78,7 @@ namespace bpmntrails
             }
         }
         //NEEDS REFACTORING BADLY
-        private void RemoveEventWithSequences(string eventId)
+        public void RemoveEventWithSequences(string eventId)
         {
             List<StartEvent> sel = new List<StartEvent>();
             foreach (StartEvent se in trail.process.startEvents)

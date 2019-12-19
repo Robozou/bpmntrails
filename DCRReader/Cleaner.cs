@@ -23,7 +23,33 @@ namespace DCRReader
             this.trail = trail;
             FindEvents();
             RemoveEvents();
+            RemoveDanglingEndEvents();
             return trail;
+        }
+
+        private void RemoveDanglingEndEvents()
+        {
+            List<string> toBeDel = new List<string>();
+            foreach(EndEvent ee in trail.Definition.process.endEvents)
+            {
+                foreach(string id in ee.incoming)
+                {
+                    String sourceId = trail.Definition.process.sequenceFlows.Find(x => x.id.Equals(id)).sourceRef;
+                    if(trail.Definition.process.startEvents.Exists(x => x.id.Equals(sourceId)))
+                    {
+                        toBeDel.Add(ee.id);
+                    }
+                    else if (trail.Definition.process.parallelGateways.Exists(x => x.id.Equals(sourceId)))
+                    {
+                        toBeDel.Add(ee.id);
+                    }
+                    else if (trail.Definition.process.exclusiveGateways.Exists(x => x.id.Equals(sourceId)))
+                    {
+                        toBeDel.Add(ee.id);
+                    }
+                }
+            }
+            toBeDel.ForEach(x => trail.RemoveEventWithSequences(x));
         }
 
         private void FindEvents()
