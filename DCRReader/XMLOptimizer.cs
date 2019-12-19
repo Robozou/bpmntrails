@@ -145,15 +145,6 @@ namespace DCRReader
                     }
                 }
             }
-            //foreach(KeyValuePair<List<string>, Tuple<int, List<int>>> kvp in dict)
-            //{
-            //    Console.WriteLine("Key: ");
-            //    kvp.Key.ForEach(x => Console.Write(x + ", "));
-            //    Console.WriteLine("\nValue: ");
-            //    Console.Write(kvp.Value.Item1 + ": ");
-            //    kvp.Value.Item2.ForEach(x => Console.Write(x + ", "));
-            //}
-            //string s = Console.ReadLine();
             return dict;
         }
     }
