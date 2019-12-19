@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Xml;
 
 namespace DCRReader
@@ -23,17 +24,31 @@ namespace DCRReader
 
         public void Read(string fileLoc, bool optimize = false)
         {
-            ReadTraces();
-            ReadGraph();
-            Build(optimize);
-            Print(fileLoc);
+            try
+            {
+                ReadTraces();
+                ReadGraph();
+                Build(optimize);
+                Print(fileLoc);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         private void Print(string fileLoc)
         {
-            if (builder != null)
+            try
             {
-                builder.Print(fileLoc);
+                if (builder != null)
+                {
+                    builder.Print(fileLoc);
+                }
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
 

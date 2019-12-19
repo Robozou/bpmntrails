@@ -34,7 +34,14 @@ namespace DCRReader
 
         public void Print(string fileLoc)
         {
-            trail.PrintTrail(fileLoc);
+            try
+            {
+                trail.PrintTrail(fileLoc);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public void Build()
