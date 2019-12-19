@@ -61,11 +61,23 @@ namespace bpmntrails
         //DEBUG THIS
         public void RemoveTaskAndMoveSequences(string eventId)
         {
-            Task task = trail.process.tasks.Find(x => x.id.Equals(eventId));
-            if (task != null)
+            dynamic bpmnElement = null;
+            if (trail.process.tasks.Exists(x => x.id.Equals(eventId)))
             {
-                string incId = task.incoming[0];
-                string outId = task.outgoing[0];
+                bpmnElement = trail.process.tasks.Find(x => x.id.Equals(eventId));
+            }
+            else if (trail.process.exclusiveGateways.Exists(x => x.id.Equals(eventId)))
+            {
+                bpmnElement = trail.process.exclusiveGateways.Find(x => x.id.Equals(eventId));
+            }
+            else if (trail.process.parallelGateways.Exists(x => x.id.Equals(eventId)))
+            {
+                bpmnElement = trail.process.parallelGateways.Find(x => x.id.Equals(eventId));
+            }
+            if (bpmnElement != null)
+            {
+                string incId = bpmnElement.incoming[0];
+                string outId = bpmnElement.outgoing[0];
                 SequenceFlow incSeq = trail.process.sequenceFlows.Find(x => x.id.Equals(incId));
                 SequenceFlow outSeq = trail.process.sequenceFlows.Find(x => x.id.Equals(outId));
                 if (incSeq != null && outSeq != null)
@@ -75,7 +87,9 @@ namespace bpmntrails
                     RemoveEventWithSequences(eventId);
                     AddSequenceFlow(incId, source, target);
                 }
+                return;
             }
+            
         }
         //NEEDS REFACTORING BADLY
         public void RemoveEventWithSequences(string eventId)
