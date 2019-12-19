@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Tester.MainBoi</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="bpmntrails">
       <HintPath>..\bpmntrails\bin\Debug\bpmntrails.dll</HintPath>
@@ -53,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Driver.cs" />
+    <Compile Include="MainBoi.cs" />
     <Compile Include="TestProgram.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
