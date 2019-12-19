@@ -46,6 +46,7 @@
     <Compile Include="BPMNPlane.cs" />
     <Compile Include="BPMNShape.cs" />
     <Compile Include="BPMNTrail.cs" />
+    <Compile Include="DCRID.cs" />
     <Compile Include="Definition.cs" />
     <Compile Include="Diagram.cs" />
     <Compile Include="EndEvent.cs" />
