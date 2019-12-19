@@ -9,14 +9,15 @@ namespace DCRReader
     class XMLOptimizer
     {
         int buffer = 0;
-        internal BPMNTrail Optimize(Processor graph, List<List<string>> trace, Dictionary<string, HashSet<Tuple<string, string>>> tree, BPMNTrail trail, Dictionary<string, string> labelId)
+        internal BPMNTrail Optimize(Processor graph, List<List<string>> traces, Dictionary<string, HashSet<Tuple<string, string>>> tree, BPMNTrail trail, Dictionary<string, string> labelId)
         {
             Dictionary<List<string>, Tuple<int, List<int>>> dict;
             Dictionary<string, string> idGate = new Dictionary<string, string>();
             Validator validator = new Validator(graph, labelId);
+            Cleaner cleaner = new Cleaner(traces, labelId);
             BPMNTrail workingTrail = trail;
             BPMNTrail oldTrail;
-            foreach (List<string> l in trace)
+            foreach (List<string> l in traces)
             {
                 dict = FindRepeatingSequence(l);
                 if (dict.Keys.Count > 0)
@@ -109,6 +110,7 @@ namespace DCRReader
 
                 }
             }
+            workingTrail = cleaner.Clean(workingTrail);
             return workingTrail;
         }
 
