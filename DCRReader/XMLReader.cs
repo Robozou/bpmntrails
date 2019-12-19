@@ -22,12 +22,12 @@ namespace DCRReader
             labelId = new Dictionary<string, string>();
         }
 
-        public void Read(string fileLoc, bool optimize = false)
+        public void Read(string fileLoc, string dcrGraphLoc, string traceListLoc, bool optimize = false)
         {
             try
             {
-                ReadTraces();
-                ReadGraph();
+                ReadTraces(traceListLoc);
+                ReadGraph(dcrGraphLoc);
                 Build(optimize);
                 Print(fileLoc);
             }
@@ -52,10 +52,10 @@ namespace DCRReader
             }
         }
 
-        private void ReadGraph()
+        private void ReadGraph(string dcrGraphLoc)
         {
             XmlDocument xml = new XmlDocument();
-            xml.Load("..\\..\\..\\testGraph.xml");
+            xml.Load(dcrGraphLoc);
             XmlNodeList events = xml.SelectNodes("//events//event[not(@type='nesting')]");
             XmlNodeList nestingEvents = xml.SelectNodes("//events//event[@type='nesting']");
             List<string> nestingEventIds = new List<string>();
@@ -166,10 +166,10 @@ namespace DCRReader
             graph.AddEvent(e.Attributes["id"].Value);
         }
 
-        private void ReadTraces()
+        private void ReadTraces(string traceListLoc)
         {
             XmlDocument xml = new XmlDocument();
-            xml.Load("..\\..\\..\\testTrace.xml");
+            xml.Load(traceListLoc);
             XmlNodeList list = xml.SelectNodes("//trace[not(@type='Forbidden')]");
             foreach (XmlElement n in list)
             {
