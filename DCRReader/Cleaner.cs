@@ -24,7 +24,25 @@ namespace DCRReader
             FindEvents();
             RemoveEvents();
             RemoveDanglingEndEvents();
+            RemoveRedundantMergeAndSplitNodes();
             return trail;
+        }
+
+        private void RemoveRedundantMergeAndSplitNodes()
+        {
+            List<string> toBeDel = new List<string>();
+            foreach(ExclusiveGateway eg in trail.Definition.process.exclusiveGateways)
+            {
+                if(eg.gatewayDirection.Equals("Diverging") && eg.outgoing.Count == 1)
+                {
+                    toBeDel.Add(eg.id);
+                }
+                else if (eg.gatewayDirection.Equals("Converging") && eg.incoming.Count == 1)
+                {
+                    toBeDel.Add(eg.id);
+                }
+            }
+            toBeDel.ForEach(x => trail.RemoveTaskAndMoveSequences(x));
         }
 
         private void RemoveDanglingEndEvents()
