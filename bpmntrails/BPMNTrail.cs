@@ -549,12 +549,12 @@ namespace bpmntrails
             }
         }
 
-        public void PrintTrail()
+        public void PrintTrail(string fileLoc)
         {
             XmlSerializer serial = new XmlSerializer(typeof(Definition));
             XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
             ns.Add("bpmn", "http://www.omg.org/spec/BPMN/20100524/MODEL");
-            TextWriter writer = new StreamWriter("..\\..\\..\\..\\test.xml");
+            TextWriter writer = new StreamWriter(fileLoc);
             serial.Serialize(writer, trail, ns);
             writer.Close();
         }

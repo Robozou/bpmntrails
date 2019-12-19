@@ -32,9 +32,9 @@ namespace DCRReader
             trail = optimus.Optimize(graph, trace, tree, trail, labelId);
         }
 
-        public void Print()
+        public void Print(string fileLoc)
         {
-            trail.PrintTrail();
+            trail.PrintTrail(fileLoc);
         }
 
         public void Build()

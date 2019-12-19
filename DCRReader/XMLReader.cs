@@ -21,19 +21,19 @@ namespace DCRReader
             labelId = new Dictionary<string, string>();
         }
 
-        public void Read(bool optimize = false)
+        public void Read(string fileLoc, bool optimize = false)
         {
             ReadTraces();
             ReadGraph();
             Build(optimize);
-            Print();
+            Print(fileLoc);
         }
 
-        private void Print()
+        private void Print(string fileLoc)
         {
             if (builder != null)
             {
-                builder.Print();
+                builder.Print(fileLoc);
             }
         }
 
