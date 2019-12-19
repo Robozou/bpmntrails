@@ -11,11 +11,19 @@ namespace DCRReader
         int buffer = 0;
         internal BPMNTrail Optimize(Processor graph, List<List<string>> traces, Dictionary<string, HashSet<Tuple<string, string>>> tree, BPMNTrail trail, Dictionary<string, string> labelId)
         {
+            Cleaner cleaner = new Cleaner(traces, labelId);
+            BPMNTrail workingTrail;
+            RemoveRepeatingSequences(graph, traces, trail, labelId, out workingTrail);
+            workingTrail = cleaner.Clean(workingTrail);
+            return workingTrail;
+        }
+
+        private void RemoveRepeatingSequences(Processor graph, List<List<string>> traces, BPMNTrail trail, Dictionary<string, string> labelId, out BPMNTrail workingTrail)
+        {
             Dictionary<List<string>, Tuple<int, List<int>>> dict;
             Dictionary<string, string> idGate = new Dictionary<string, string>();
             Validator validator = new Validator(graph, labelId);
-            Cleaner cleaner = new Cleaner(traces, labelId);
-            BPMNTrail workingTrail = trail;
+            workingTrail = trail;
             BPMNTrail oldTrail;
             foreach (List<string> l in traces)
             {
@@ -39,14 +47,14 @@ namespace DCRReader
                     if (dict.Keys.Count > 1)
                     {
                         List<List<string>> subs = new List<List<string>>();
-                        foreach(List<string> ls in dict.Keys)
+                        foreach (List<string> ls in dict.Keys)
                         {
                             List<List<string>> others = dict.Keys.ToList().FindAll(x => !x.Equals(ls));
-                            foreach(List<string> other in others)
+                            foreach (List<string> other in others)
                             {
                                 if (other.Count > ls.Count)
                                 {
-                                    for(int i = 0; i+ls.Count<other.Count; i++)
+                                    for (int i = 0; i + ls.Count < other.Count; i++)
                                     {
                                         List<string> news = other.GetRange(i, ls.Count);
                                         if (news.SequenceEqual(ls))
@@ -55,13 +63,13 @@ namespace DCRReader
                                         }
                                     }
                                 }
-                                if (ls.Count + dict[ls].Item1 >= dict[other].Item1 && dict[ls].Item1<dict[other].Item1)
+                                if (ls.Count + dict[ls].Item1 >= dict[other].Item1 && dict[ls].Item1 < dict[other].Item1)
                                 {
                                     subs.Add(other);
                                 }
                             }
                         }
-                        foreach(List<string> ls in subs)
+                        foreach (List<string> ls in subs)
                         {
                             dict.Remove(ls);
                         }
@@ -69,7 +77,7 @@ namespace DCRReader
 
                     foreach (List<string> ls in dict.Keys)
                     {
-                        
+
                         string eventId = String.Empty;
                         string gateId = String.Empty;
                         for (int i = 0; i <= dict[ls].Item1; i++)
@@ -110,8 +118,6 @@ namespace DCRReader
 
                 }
             }
-            workingTrail = cleaner.Clean(workingTrail);
-            return workingTrail;
         }
 
         private Dictionary<List<string>, Tuple<int, List<int>>> FindRepeatingSequence(List<string> list)
