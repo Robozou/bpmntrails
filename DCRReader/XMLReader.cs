@@ -210,7 +210,10 @@ namespace DCRReader
         {
             builder = new XMLBuilder(graph, trace, idLabel, labelId);
             builder.Build();
-            if (optimize) builder.Optimize();
+            if (optimize)
+            {
+                builder.Optimize();
+            }
         }
     }
 }
