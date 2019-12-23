@@ -39,7 +39,7 @@ namespace DCRReader
             }
             else
             {
-                throw new System.Exception();
+                throw new System.Exception("I am error:" + id + "");
             }
         }
 
