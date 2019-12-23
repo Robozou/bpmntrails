@@ -197,7 +197,10 @@ namespace DCRReader
                 List<string> eventList = new List<string>();
                 for (int i = 0; i < n.ChildNodes.Count; i++)
                 {
-                    eventList.Add(n.ChildNodes[i].Attributes["id"].Value);
+                    if (n.ChildNodes[i].Name.Equals("event"))
+                    {
+                        eventList.Add(n.ChildNodes[i].Attributes["id"].Value);
+                    }
                 }
                 trace.Add(eventList);
             }
