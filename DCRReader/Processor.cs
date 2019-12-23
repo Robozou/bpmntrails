@@ -52,13 +52,13 @@ namespace DCRReader
                 switch (r.Type)
                 {
                     case cond:
-                        if (!executed.Contains(r.Source))
+                        if (!executed.Contains(r.Source) && included.Contains(r.Source))
                         {
                             SetDisabled(r.Target);
                         }
                         break;
                     case mile:
-                        if (pending.Contains(r.Source))
+                        if (pending.Contains(r.Source) && included.Contains(r.Source))
                         {
                             SetDisabled(r.Target);
                         }
