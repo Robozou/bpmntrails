@@ -1,9 +1,5 @@
 ﻿using DCRReader;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Tester
 {
@@ -20,7 +16,7 @@ namespace Tester
             string dcrGraphLoc = args[1];
             string traceListLoc = args[2];
             bool optimize = true;
-            if(args.Length >= 4 && args[3].Equals("-f"))
+            if (args.Length >= 4 && args[3].Equals("-f"))
             {
                 optimize = false;
             }
