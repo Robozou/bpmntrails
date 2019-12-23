@@ -27,8 +27,29 @@ namespace DCRReader
             try
             {
                 ReadTraces(traceListLoc);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            try
+            {
                 ReadGraph(dcrGraphLoc);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            try
+            {
                 Build(optimize);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            try
+            {
                 Print(fileLoc);
             }
             catch (Exception)
