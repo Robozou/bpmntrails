@@ -77,25 +77,26 @@ namespace DCRReader
         {
             XmlDocument xml = new XmlDocument();
             xml.Load(dcrGraphLoc);
-            XmlNodeList events = xml.SelectNodes("//events//event[not(@type='nesting')]");
+            XmlNodeList events = xml.SelectNodes("//events//event[not(@type='nesting') and not(@type='subprocess')]");
+            XmlNodeList subprocesEvents = xml.SelectNodes("//events//event[@type='subprocess']");
             XmlNodeList nestingEvents = xml.SelectNodes("//events//event[@type='nesting']");
             List<string> nestingEventIds = new List<string>();
             foreach (XmlElement n in nestingEvents)
             {
                 nestingEventIds.Add(n.Attributes["id"].Value);
             }
-            AddEvents(events);
+            AddEvents(events, subprocesEvents);
             SetMarkings(xml);
             XmlNodeList conditions = xml.SelectNodes("//constraints/conditions/condition");
             XmlNodeList responses = xml.SelectNodes("//constraints/responses/response");
             XmlNodeList includes = xml.SelectNodes("//constraints/includes/include");
             XmlNodeList excludes = xml.SelectNodes("//constraints/excludes/exclude");
             XmlNodeList milestones = xml.SelectNodes("//constraints/milestones/milestone");
-            AddRelations(conditions, nestingEventIds, Processor.cond, xml);
-            AddRelations(responses, nestingEventIds, Processor.resp, xml);
-            AddRelations(includes, nestingEventIds, Processor.inc, xml);
-            AddRelations(excludes, nestingEventIds, Processor.exc, xml);
-            AddRelations(milestones, nestingEventIds, Processor.mile, xml);
+            AddRelations(conditions, nestingEventIds, subprocesEvents, Processor.cond, xml);
+            AddRelations(responses, nestingEventIds, subprocesEvents, Processor.resp, xml);
+            AddRelations(includes, nestingEventIds, subprocesEvents, Processor.inc, xml);
+            AddRelations(excludes, nestingEventIds, subprocesEvents, Processor.exc, xml);
+            AddRelations(milestones, nestingEventIds, subprocesEvents, Processor.mile, xml);
             graph.Enable();
             graph.Save();
             MakeIdLabelMapping(xml);
@@ -110,7 +111,7 @@ namespace DCRReader
             }
         }
 
-        private void AddRelations(XmlNodeList relations, List<string> nestingEventIds, string type, XmlDocument xml)
+        private void AddRelations(XmlNodeList relations, List<string> nestingEventIds, XmlNodeList subprocesEvents, string type, XmlDocument xml)
         {
             foreach (XmlElement r in relations)
             {
@@ -155,11 +156,21 @@ namespace DCRReader
             }
         }
 
-        private void AddEvents(XmlNodeList events)
+        private void AddEvents(XmlNodeList events, XmlNodeList subprocesEvents)
         {
             foreach (XmlElement e in events)
             {
                 AddEvent(e);
+                foreach (XmlElement s in subprocesEvents)
+                {
+                    foreach (XmlElement se in s.SelectNodes("/event"))
+                    {
+                        if (se.Attributes["id"].Value.Equals(e.Attributes["id"].Value))
+                        {
+                            AddEventToSubprocess(e, s);
+                        }
+                    }
+                }
             }
         }
 
@@ -185,6 +196,11 @@ namespace DCRReader
         private void AddEvent(XmlElement e)
         {
             graph.AddEvent(e.Attributes["id"].Value);
+        }
+
+        private void AddEventToSubprocess(XmlElement e, XmlElement s)
+        {
+            graph.AddEventToSubprocess(e.Attributes["id"].Value, s.Attributes["id"].Value);
         }
 
         private void ReadTraces(string traceListLoc)

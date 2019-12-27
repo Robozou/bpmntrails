@@ -8,6 +8,7 @@ namespace DCRReader
 #pragma warning restore CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
     {
         HashSet<string> events = new HashSet<string>();
+        Dictionary<string, List<string>> subprocesses = new Dictionary<string, List<string>>();
         HashSet<Relation> relations = new HashSet<Relation>();
         HashSet<string> included = new HashSet<string>();
         HashSet<string> enabled = new HashSet<string>();
@@ -32,15 +33,36 @@ namespace DCRReader
                 SetExecuted(id);
                 SetNotPending(id);
                 executionTrace.Add(id);
-                relations.ToList<Relation>().FindAll(r => r.Source == id && r.Type == resp).ForEach(r => SetPending(r.Target));
-                relations.ToList<Relation>().FindAll(r => r.Source == id && r.Type == inc).ForEach(r => SetIncluded(r.Target));
-                relations.ToList<Relation>().FindAll(r => r.Source == id && r.Type == exc).ForEach(r => SetExcluded(r.Target));
+                if (GetSubprocess(id).Equals(string.Empty) || GetAcceptingStateOfSubprocess(GetSubprocess(id)))
+                {
+                    relations.ToList<Relation>().FindAll(r => r.Source == id && r.Type == resp).ForEach(r => SetPending(r.Target));
+                    relations.ToList<Relation>().FindAll(r => r.Source == id && r.Type == inc).ForEach(r => SetIncluded(r.Target));
+                    relations.ToList<Relation>().FindAll(r => r.Source == id && r.Type == exc).ForEach(r => SetExcluded(r.Target));
+                }
                 Enable();
             }
             else
             {
                 throw new System.Exception("I am error:" + id + "");
             }
+        }
+
+        private bool GetAcceptingStateOfSubprocess(string subprocessId)
+        {
+            return subprocessId.Equals(string.Empty) ? false : subprocesses[subprocessId].TrueForAll(x => !pending.Contains(x)) && subprocesses[subprocessId].Exists(x => executed.Contains(x));
+        }
+
+        private string GetSubprocess(string eventId)
+        {
+            string res = string.Empty;
+            foreach (string k in subprocesses.Keys)
+            {
+                if (subprocesses[k].Contains(eventId))
+                {
+                    res = k;
+                }
+            }
+            return res;
         }
 
         public void Enable()
@@ -54,13 +76,19 @@ namespace DCRReader
                     case cond:
                         if (!executed.Contains(r.Source) && included.Contains(r.Source))
                         {
-                            SetDisabled(r.Target);
+                            if (!GetAcceptingStateOfSubprocess(GetSubprocess(r.Source)))
+                            {
+                                SetDisabled(r.Target);
+                            }
                         }
                         break;
                     case mile:
                         if (pending.Contains(r.Source) && included.Contains(r.Source))
                         {
-                            SetDisabled(r.Target);
+                            if (!GetAcceptingStateOfSubprocess(GetSubprocess(r.Source)))
+                            {
+                                SetDisabled(r.Target);
+                            }
                         }
                         break;
                 }
@@ -74,6 +102,18 @@ namespace DCRReader
         {
             events.Add(id);
             Enable();
+        }
+
+        public void AddEventToSubprocess(string eventId, string subprocessId)
+        {
+            if (subprocesses.Keys.Contains(subprocessId))
+            {
+                subprocesses[subprocessId].Add(eventId);
+            }
+            else
+            {
+                subprocesses[subprocessId] = new List<string> { eventId };
+            }
         }
 
         public void AddRelation(string target, string source, string type)
