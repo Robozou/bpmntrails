@@ -31,9 +31,9 @@ namespace DCRReader
         private void RemoveRedundantMergeAndSplitNodes()
         {
             List<string> toBeDel = new List<string>();
-            foreach(ExclusiveGateway eg in trail.Definition.process.exclusiveGateways)
+            foreach (ExclusiveGateway eg in trail.Definition.process.exclusiveGateways)
             {
-                if(eg.gatewayDirection.Equals("Diverging") && eg.outgoing.Count == 1)
+                if (eg.gatewayDirection.Equals("Diverging") && eg.outgoing.Count == 1)
                 {
                     toBeDel.Add(eg.id);
                 }
@@ -48,12 +48,12 @@ namespace DCRReader
         private void RemoveDanglingEndEvents()
         {
             List<string> toBeDel = new List<string>();
-            foreach(EndEvent ee in trail.Definition.process.endEvents)
+            foreach (EndEvent ee in trail.Definition.process.endEvents)
             {
-                foreach(string id in ee.incoming)
+                foreach (string id in ee.incoming)
                 {
                     String sourceId = trail.Definition.process.sequenceFlows.Find(x => x.id.Equals(id)).sourceRef;
-                    if(trail.Definition.process.startEvents.Exists(x => x.id.Equals(sourceId)))
+                    if (trail.Definition.process.startEvents.Exists(x => x.id.Equals(sourceId)))
                     {
                         toBeDel.Add(ee.id);
                     }
@@ -74,7 +74,7 @@ namespace DCRReader
         {
             StartEvent se = trail.Definition.process.startEvents[0];
             bpmnElements.Add(se.id);
-            foreach(List<string> trace in traces)
+            foreach (List<string> trace in traces)
             {
                 trail.Definition.process.startEvents.Find(x => se.id.Equals(x.id)).outgoing.ForEach(x => FindEvent(x, trace, 0));
             }
@@ -83,14 +83,14 @@ namespace DCRReader
         private void FindEvent(string bpmnSeqId, List<string> trace, int index)
         {
             string targetId = trail.Definition.process.sequenceFlows.Find(x => x.id.Equals(bpmnSeqId)).targetRef;
-            if(trail.Definition.process.endEvents.Exists(x => x.id.Equals(targetId)))
+            if (trail.Definition.process.endEvents.Exists(x => x.id.Equals(targetId)))
             {
                 return;
             }
-            else if(trail.Definition.process.exclusiveGateways.Exists(x => x.id.Equals(targetId)))
+            else if (trail.Definition.process.exclusiveGateways.Exists(x => x.id.Equals(targetId)))
             {
                 ExclusiveGateway eg = trail.Definition.process.exclusiveGateways.Find(x => x.id.Equals(targetId));
-                foreach(string id in eg.outgoing)
+                foreach (string id in eg.outgoing)
                 {
                     FindEvent(id, trace, index);
                 }
@@ -106,12 +106,12 @@ namespace DCRReader
             else if (trail.Definition.process.tasks.Exists(x => x.id.Equals(targetId)))
             {
                 Task task = trail.Definition.process.tasks.Find(x => x.id.Equals(targetId));
-                if (labelId[task.name].Equals(trace[index]))
+                if (trace.Count > index && labelId[task.name].Equals(trace[index]))
                 {
                     bpmnElements.Add(task.id);
                     foreach (string id in task.outgoing)
                     {
-                        FindEvent(id, trace, index+1);
+                        FindEvent(id, trace, index + 1);
                     }
                 }
             }
@@ -120,14 +120,14 @@ namespace DCRReader
         private void RemoveEvents()
         {
             List<string> toBeDel = new List<string>();
-            foreach(Task task in trail.Definition.process.tasks)
+            foreach (Task task in trail.Definition.process.tasks)
             {
                 if (!bpmnElements.Contains(task.id))
                 {
                     toBeDel.Add(task.id);
                 }
             }
-            foreach(string id in toBeDel)
+            foreach (string id in toBeDel)
             {
                 trail.RemoveTaskAndMoveSequences(id);
             }
