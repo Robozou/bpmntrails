@@ -1,7 +1,6 @@
 ﻿using bpmntrails;
 using System;
 using System.Collections.Generic;
-using System.Collections;
 using System.Linq;
 
 namespace DCRReader
@@ -25,6 +24,8 @@ namespace DCRReader
 
             //Maybe take longest found repeating sequence do the thing, and then rerun the finder etc.
 
+            //If split inside of a repeating sequence find a way to move it back to the corret predeceding event.b
+
             Cleaner cleaner = new Cleaner(traces, labelId);
             Validator validator = new Validator(graph, labelId);
             BPMNTrail workingTrail;
@@ -39,7 +40,7 @@ namespace DCRReader
             workingTrail = trail;
             BPMNTrail oldTrail;
             List<string> ids = FindRepeatingEvents(traces);
-            foreach(string id in ids)
+            foreach (string id in ids)
             {
                 oldTrail = workingTrail;
                 workingTrail.RemoveTaskAndMoveSequences(id);
@@ -53,16 +54,16 @@ namespace DCRReader
         private List<string> FindRepeatingEvents(List<List<string>> traces)
         {
             List<string> ids = new List<string>();
-            foreach(List<string> trace in traces)
+            foreach (List<string> trace in traces)
             {
-                for(int startLoc = 0; startLoc < trace.Count-1; startLoc++)
+                for (int startLoc = 0; startLoc < trace.Count - 1; startLoc++)
                 {
-                    for(int currLoc = startLoc+1; currLoc < trace.Count; currLoc++)
+                    for (int currLoc = startLoc + 1; currLoc < trace.Count; currLoc++)
                     {
                         if (trace[startLoc].Equals(trace[currLoc]))
                         {
                             string id = string.Empty;
-                            for(int i = 0; i<=currLoc; i++)
+                            for (int i = 0; i <= currLoc; i++)
                             {
                                 id += trace[i];
                             }
@@ -88,7 +89,7 @@ namespace DCRReader
             {
                 dict = FindRepeatingSequence(l);
                 if (dict.Keys.Count > 0)
-                { 
+                {
                     if (dict.Keys.Count > 1)
                     {
                         List<List<string>> subs = new List<List<string>>();
@@ -142,7 +143,10 @@ namespace DCRReader
                                 for (int i = 0; i < pos + ls.Count; i++)
                                 {
                                     doubleEventId += l[i];
-                                    if (i >= pos) ids.Add(doubleEventId);
+                                    if (i >= pos)
+                                    {
+                                        ids.Add(doubleEventId);
+                                    }
                                 }
                             }
                             workingTrail.AddBackLoopingSequence(gateId, ids[0], "backLoopSeqFlow" + buffer);
