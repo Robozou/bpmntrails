@@ -92,6 +92,8 @@ namespace DCRReader
                 if (dict.Keys.Count > 0)
                 {
                     //Move relevant XOR gates here.
+                    //Starting at the first of the repeating sequences go through the flow in the graph. 
+                    //If it contains XORs that needs fx 12121 move the XOR to after 1.
                     foreach (List<string> ls in dict.Keys)
                     {
                         string eventId = String.Empty;
@@ -132,9 +134,6 @@ namespace DCRReader
                             }
                         }
                     }
-
-
-
                 }
             }
         }
