@@ -91,6 +91,7 @@ namespace DCRReader
                 dict = FindRepeatingSequence(l);
                 if (dict.Keys.Count > 0)
                 {
+                    //Move relevant XOR gates here.
                     foreach (List<string> ls in dict.Keys)
                     {
                         string eventId = String.Empty;
