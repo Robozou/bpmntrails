@@ -92,11 +92,13 @@ namespace DCRReader
             XmlNodeList includes = xml.SelectNodes("//constraints/includes/include");
             XmlNodeList excludes = xml.SelectNodes("//constraints/excludes/exclude");
             XmlNodeList milestones = xml.SelectNodes("//constraints/milestones/milestone");
+            XmlNodeList noresponses = xml.SelectNodes("//constraint/coresponses/coresponse");
             AddRelations(conditions, nestingEventIds, subprocesEvents, Processor.cond, xml);
             AddRelations(responses, nestingEventIds, subprocesEvents, Processor.resp, xml);
             AddRelations(includes, nestingEventIds, subprocesEvents, Processor.inc, xml);
             AddRelations(excludes, nestingEventIds, subprocesEvents, Processor.exc, xml);
             AddRelations(milestones, nestingEventIds, subprocesEvents, Processor.mile, xml);
+            AddRelations(noresponses, nestingEventIds, subprocesEvents, Processor.noresp, xml);
             graph.Enable();
             graph.Save();
             MakeIdLabelMapping(xml);
