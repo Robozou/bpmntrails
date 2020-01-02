@@ -48,7 +48,7 @@ namespace DotReader
             {
                 string from = fromIdElement;
                 Boolean isSplit = false;
-                if(outGoing.Count > 1)
+                if (outGoing.Count > 1)
                 {
                     splitName = splitnum;
                     from = splitName;
@@ -91,7 +91,11 @@ namespace DotReader
             taskId = (e.name + padding).Replace(" ", "");
             trail.AddTask(taskId, e.name);
             trail.AddSequenceFlow(seqnum, fromId, taskId);
-            if (!isSplit)tail.Add(e.toId);
+            if (!isSplit)
+            {
+                tail.Add(e.toId);
+            }
+
             NextNode(e.toId, taskId, tail);
         }
 
@@ -167,10 +171,9 @@ namespace DotReader
             return e.toId.Equals(n.id);
         }
 
-        //Todo make real print fucntion
         public void Print(string fileLoc)
         {
-            trail.PrintTrail();
+            trail.PrintTrail(fileLoc);
         }
     }
 }
