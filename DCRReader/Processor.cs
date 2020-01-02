@@ -25,6 +25,7 @@ namespace DCRReader
         public const string exc = "exclude";
         public const string cond = "conditon";
         public const string mile = "milestone";
+        public const string noresp = "noresponse";
 
         public void Execute(string id)
         {
@@ -35,9 +36,10 @@ namespace DCRReader
                 executionTrace.Add(id);
                 if (GetSubprocess(id).Equals(string.Empty) || GetAcceptingStateOfSubprocess(GetSubprocess(id)))
                 {
-                    relations.ToList<Relation>().FindAll(r => r.Source == id && r.Type == resp).ForEach(r => SetPending(r.Target));
-                    relations.ToList<Relation>().FindAll(r => r.Source == id && r.Type == inc).ForEach(r => SetIncluded(r.Target));
-                    relations.ToList<Relation>().FindAll(r => r.Source == id && r.Type == exc).ForEach(r => SetExcluded(r.Target));
+                    relations.ToList<Relation>().FindAll(r => r.Source.Equals(id) && r.Type.Equals(resp)).ForEach(r => SetPending(r.Target));
+                    relations.ToList<Relation>().FindAll(r => r.Source.Equals(id) && r.Type.Equals(inc)).ForEach(r => SetIncluded(r.Target));
+                    relations.ToList<Relation>().FindAll(r => r.Source.Equals(id) && r.Type.Equals(exc)).ForEach(r => SetExcluded(r.Target));
+                    relations.ToList<Relation>().FindAll(r => r.Source.Equals(id) && r.Type.Equals(noresp)).ForEach(r => SetNotPending(r.Target));
                 }
                 Enable();
             }
