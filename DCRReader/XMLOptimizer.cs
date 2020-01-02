@@ -81,6 +81,7 @@ namespace DCRReader
 
         private void RemoveRepeatingSequences(Processor graph, List<List<string>> traces, BPMNTrail trail, Dictionary<string, string> labelId, Validator validator, out BPMNTrail workingTrail)
         {
+            //Key = the repeating sequence Value = the start loc and a list of start locs of the repeats.
             Dictionary<List<string>, Tuple<int, List<int>>> dict;
             Dictionary<string, string> idGate = new Dictionary<string, string>();
             workingTrail = trail;
