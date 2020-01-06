@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
-using System.Linq;
 
 namespace bpmntrails
 {
@@ -37,6 +36,37 @@ namespace bpmntrails
             }
         }
 
+        public void MoveMergeGate(string mergeGateId, string eventIdToMoveTo, string eventIdToMoveFrom)
+        {
+            ExclusiveGateway eg = trail.process.exclusiveGateways.Find(x => x.id.Equals(mergeGateId));
+            Task moveToEvent = trail.process.tasks.Find(x => x.id.Equals(eventIdToMoveTo));
+            Task moveFromEvent = trail.process.tasks.Find(x => x.id.Equals(eventIdToMoveFrom));
+            string idFromMoveToEvent = trail.process.sequenceFlows.Find(x => x.id.Equals(moveToEvent.outgoing[0])).id;
+            string idToMergeGate = trail.process.sequenceFlows.Find(x => x.id.Equals(eg.incoming[0])).id;
+            string idToMoveFromEvent = trail.process.sequenceFlows.Find(x => x.id.Equals(moveFromEvent.incoming[0])).id;
+
+            string idOfEventBeforeMergeGate = trail.process.sequenceFlows.Find(x => x.id.Equals(idToMergeGate)).sourceRef;
+            string idAfterMoveToEvent = trail.process.sequenceFlows.Find(x => x.id.Equals(idFromMoveToEvent)).targetRef;
+
+            List<string> ls1 = new List<string>
+            {
+                idFromMoveToEvent,
+                idToMergeGate,
+                idToMoveFromEvent
+            };
+            List<string> ls2 = new List<string>
+            {
+                idFromMoveToEvent + "_edge",
+                idToMergeGate + "_edge",
+                idToMoveFromEvent + "_edge"
+            };
+            trail.process.sequenceFlows.RemoveAll(x => ls1.Contains(x.id));
+            trail.diagram.bpmnPlane.bpmnEdges.RemoveAll(x => ls2.Contains(x.id));
+            AddSequenceFlow(idToMergeGate, moveToEvent.id, eg.id);
+            AddSequenceFlow(idToMoveFromEvent, eg.id, idAfterMoveToEvent);
+            AddSequenceFlow(idFromMoveToEvent, idOfEventBeforeMergeGate, moveFromEvent.id);
+        }
+
         public void AddBackLoopingSequence(string mergeGateId, string eventId, string seqFlowBackLoopId)
         {
             Task task = trail.process.tasks.Find(x => x.id.Equals(eventId));
@@ -44,7 +74,8 @@ namespace bpmntrails
             {
                 string incId = task.incoming[0];
                 SequenceFlow incSeq = trail.process.sequenceFlows.Find(x => x.id.Equals(incId));
-                if (incSeq != null) {
+                if (incSeq != null)
+                {
                     string source = incSeq.sourceRef;
                     if (trail.process.exclusiveGateways.Exists(x => x.id.Equals(source)))
                     {
@@ -58,7 +89,7 @@ namespace bpmntrails
                 }
             }
         }
-        //DEBUG THIS
+
         public void RemoveTaskAndMoveSequences(string eventId)
         {
             dynamic bpmnElement = null;
@@ -89,7 +120,7 @@ namespace bpmntrails
                 }
                 return;
             }
-            
+
         }
         //NEEDS REFACTORING BADLY
         public void RemoveEventWithSequences(string eventId)
@@ -559,7 +590,7 @@ namespace bpmntrails
                 TextWriter writer = new StreamWriter(fileLoc);
                 serial.Serialize(writer, trail, ns);
                 writer.Close();
-            } 
+            }
             catch (Exception)
             {
                 throw;
