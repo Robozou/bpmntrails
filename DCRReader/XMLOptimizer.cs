@@ -139,7 +139,71 @@ namespace DCRReader
             }
         }
 
-        private Dictionary<List<string>, Tuple<int, List<int>>> FindRepeatingSequence(List<string> list)
+        private BPMNTrail FixMergeGateLocationsInRepeatedSequences(List<string> repSeq, Tuple<int, List<int>> tuple, List<string> trace, BPMNTrail workingTrail)
+        {
+            string idString = string.Empty;
+            List<string> repSeqIds = new List<string>();
+            List<string> ids = new List<string>();
+            for (int i = 0; i < repSeq.Count + tuple.Item1; i++)
+            {
+                idString += repSeq[i];
+                if (i >= tuple.Item1)
+                {
+                    repSeqIds.Add(idString);
+                }
+            }
+            foreach (int pos in tuple.Item2)
+            {
+                idString = string.Empty;
+                for (int i = 0; i < pos + repSeq.Count; i++)
+                {
+                    idString += trace[i];
+                    if (i >= pos)
+                    {
+                        ids.Add(idString);
+                    }
+                }
+            }
+
+            Task current = workingTrail.Definition.process.tasks.Find(x => x.id.Equals(repSeqIds.Last<string>()));
+            Task helperTask1 = null;
+            Task helperTask2 = null;
+            ExclusiveGateway eg = null;
+            SequenceFlow seqFlow = null;
+            string nextId = ids[0];
+            string helper = string.Empty;
+            while (!current.id.Equals(ids.Last<string>()))
+            {
+                helper = workingTrail.Definition.process.sequenceFlows.Find(x => x.id.Equals(current.outgoing[0])).targetRef;
+                if (helper.Equals(nextId))
+                {
+                    nextId = ids[ids.FindIndex(x => x.Equals(nextId)) + 1];
+                    current = workingTrail.Definition.process.tasks.Find(x => x.id.Equals(helper));
+                }
+                else if (workingTrail.Definition.process.exclusiveGateways.Exists(x => x.id.Equals(helper)))
+                {
+                    eg = workingTrail.Definition.process.exclusiveGateways.Find(x => x.id.Equals(helper));
+                    foreach (string s in eg.outgoing)
+                    {
+                        helper = workingTrail.Definition.process.sequenceFlows.Find(x => x.id.Equals(s)).targetRef;
+                        if (helper.Equals(nextId))
+                        {
+                            seqFlow = workingTrail.Definition.process.sequenceFlows.Find(x => x.id.Equals(s));
+                            helperTask1 = workingTrail.Definition.process.tasks.Find(x => x.id.Equals(helper));
+                            helperTask2 = workingTrail.Definition.process.tasks.Find(x => x.name.Equals(helperTask1.name) && repSeqIds.Contains(x.id));
+                            workingTrail.MoveMergeGate(eg.id, helperTask2.id, helperTask1.id);
+                            nextId = ids[ids.FindIndex(x => x.Equals(nextId)) + 1];
+                            current = helperTask1;
+                        }
+                    }
+
+                }
+            }
+
+
+            return workingTrail;
+        }
+
         private Dictionary<List<string>, Tuple<int, List<int>>> FindRepeatingSequence(List<string> trace)
         {
             Dictionary<List<string>, Tuple<int, List<int>>> dict = new Dictionary<List<string>, Tuple<int, List<int>>>();
