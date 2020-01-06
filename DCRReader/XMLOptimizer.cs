@@ -24,7 +24,7 @@ namespace DCRReader
 
             //Maybe take longest found repeating sequence do the thing, and then rerun the finder etc.
 
-            //If split inside of a repeating sequence find a way to move it back to the corret predeceding event.b
+            //If split inside of a repeating sequence find a way to move it back to the corret predeceding event.
 
             Cleaner cleaner = new Cleaner(traces, labelId);
             Validator validator = new Validator(graph, labelId);
@@ -86,35 +86,36 @@ namespace DCRReader
             Dictionary<string, string> idGate = new Dictionary<string, string>();
             workingTrail = trail;
             BPMNTrail oldTrail;
-            foreach (List<string> l in traces)
+            foreach (List<string> trace in traces)
             {
-                dict = FindRepeatingSequence(l);
+                dict = FindRepeatingSequence(trace);
                 if (dict.Keys.Count > 0)
                 {
                     //Move relevant XOR gates here.
                     //Starting at the first of the repeating sequences go through the flow in the graph. 
                     //If it contains XORs that needs fx 12121 move the XOR to after 1.
-                    foreach (List<string> ls in dict.Keys)
+                    foreach (List<string> repSeq in dict.Keys)
                     {
-                        string eventId = String.Empty;
-                        string gateId = String.Empty;
-                        for (int i = 0; i <= dict[ls].Item1; i++)
+                        FixMergeGateLocationsInRepeatedSequences(repSeq, dict[repSeq], trace, workingTrail);
+                        string eventId = string.Empty;
+                        string gateId = string.Empty;
+                        for (int i = 0; i <= dict[repSeq].Item1; i++)
                         {
-                            eventId += l[i];
+                            eventId += trace[i];
                         }
-                        if (!eventId.Equals(String.Empty) && !idGate.Keys.Contains(eventId))
+                        if (!eventId.Equals(string.Empty) && !idGate.Keys.Contains(eventId))
                         {
                             oldTrail = workingTrail;
                             gateId = "mergeGate" + buffer;
                             workingTrail.InsertMergeGate(eventId, gateId, "seqflowgateevent" + buffer);
                             idGate[eventId] = gateId;
                             List<string> ids = new List<string>();
-                            foreach (int pos in dict[ls].Item2)
+                            foreach (int pos in dict[repSeq].Item2)
                             {
-                                string doubleEventId = String.Empty;
-                                for (int i = 0; i < pos + ls.Count; i++)
+                                string doubleEventId = string.Empty;
+                                for (int i = 0; i < pos + repSeq.Count; i++)
                                 {
-                                    doubleEventId += l[i];
+                                    doubleEventId += trace[i];
                                     if (i >= pos)
                                     {
                                         ids.Add(doubleEventId);
@@ -139,18 +140,19 @@ namespace DCRReader
         }
 
         private Dictionary<List<string>, Tuple<int, List<int>>> FindRepeatingSequence(List<string> list)
+        private Dictionary<List<string>, Tuple<int, List<int>>> FindRepeatingSequence(List<string> trace)
         {
             Dictionary<List<string>, Tuple<int, List<int>>> dict = new Dictionary<List<string>, Tuple<int, List<int>>>();
             List<int> places;
-            int maxLen = list.Count / 2;
+            int maxLen = trace.Count / 2;
             for (int length = 2; length <= maxLen; length++)
             {
-                for (int startLocOfSearchString = 0; startLocOfSearchString + length <= list.Count - startLocOfSearchString - length; startLocOfSearchString++)
+                for (int startLocOfSearchString = 0; startLocOfSearchString + length <= trace.Count - startLocOfSearchString - length; startLocOfSearchString++)
                 {
-                    List<string> ls = list.GetRange(startLocOfSearchString, length);
-                    for (int startLocOfTestString = 0; startLocOfTestString + length + startLocOfSearchString + length <= list.Count; startLocOfTestString++)
+                    List<string> ls = trace.GetRange(startLocOfSearchString, length);
+                    for (int startLocOfTestString = 0; startLocOfTestString + length + startLocOfSearchString + length <= trace.Count; startLocOfTestString++)
                     {
-                        List<string> test = list.GetRange(length + startLocOfSearchString + startLocOfTestString, length);
+                        List<string> test = trace.GetRange(length + startLocOfSearchString + startLocOfTestString, length);
                         if (ls.SequenceEqual<string>(test))
                         {
                             if (dict.ContainsKey(ls))
