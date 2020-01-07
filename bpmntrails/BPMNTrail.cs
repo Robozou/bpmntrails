@@ -38,6 +38,7 @@ namespace bpmntrails
 
         public void MoveMergeGate(string mergeGateId, string eventIdToMoveTo, string eventIdToMoveFrom)
         {
+            SequenceFlow flow = null;
             ExclusiveGateway eg = trail.process.exclusiveGateways.Find(x => x.id.Equals(mergeGateId));
             Task moveToEvent = trail.process.tasks.Find(x => x.id.Equals(eventIdToMoveTo));
             Task moveFromEvent = trail.process.tasks.Find(x => x.id.Equals(eventIdToMoveFrom));
@@ -60,6 +61,60 @@ namespace bpmntrails
                 idToMergeGate + "_edge",
                 idToMoveFromEvent + "_edge"
             };
+            try
+            {
+                flow = trail.process.sequenceFlows.Find(x => x.id.Equals(idFromMoveToEvent));
+                trail.process.tasks.Find(x => x.id.Equals(flow.targetRef)).incoming.Remove(idFromMoveToEvent);
+            }
+            catch (Exception)
+            {
+                //throw new Exception("First");
+            }
+            try
+            {
+                flow = trail.process.sequenceFlows.Find(x => x.id.Equals(idFromMoveToEvent));
+                trail.process.tasks.Find(x => x.id.Equals(flow.sourceRef)).outgoing.Remove(idFromMoveToEvent);
+            }
+            catch (Exception)
+            {
+                //throw new Exception("Second");
+            }
+            try
+            {
+                flow = trail.process.sequenceFlows.Find(x => x.id.Equals(idToMoveFromEvent));
+                trail.process.tasks.Find(x => x.id.Equals(flow.targetRef)).incoming.Remove(idToMoveFromEvent);
+            }
+            catch (Exception)
+            {
+                //throw new Exception("Third");
+            }
+            try
+            {
+                flow = trail.process.sequenceFlows.Find(x => x.id.Equals(idToMoveFromEvent));
+                trail.process.tasks.Find(x => x.id.Equals(flow.sourceRef)).outgoing.Remove(idToMoveFromEvent);
+            }
+            catch (Exception)
+            {
+                //throw new Exception("Fourth");
+            }
+            try
+            {
+                flow = trail.process.sequenceFlows.Find(x => x.id.Equals(idToMoveFromEvent));
+                trail.process.exclusiveGateways.Find(x => x.id.Equals(flow.targetRef)).incoming.Remove(idToMoveFromEvent);
+            }
+            catch (Exception)
+            {
+                //throw new Exception("Five");
+            }
+            try
+            {
+                flow = trail.process.sequenceFlows.Find(x => x.id.Equals(idToMoveFromEvent));
+                trail.process.exclusiveGateways.Find(x => x.id.Equals(flow.sourceRef)).outgoing.Remove(idToMoveFromEvent);
+            }
+            catch (Exception)
+            {
+                //throw new Exception("Six");
+            }
             trail.process.sequenceFlows.RemoveAll(x => ls1.Contains(x.id));
             trail.diagram.bpmnPlane.bpmnEdges.RemoveAll(x => ls2.Contains(x.id));
             AddSequenceFlow(idToMergeGate, moveToEvent.id, eg.id);
@@ -107,8 +162,8 @@ namespace bpmntrails
             }
             if (bpmnElement != null)
             {
-                string incId = bpmnElement.incoming[0];
-                string outId = bpmnElement.outgoing[0];
+                string incId = bpmnElement.incoming.Count == 1 ? bpmnElement.incoming[0] : null;
+                string outId = bpmnElement.outgoing.Count == 1 ? bpmnElement.outgoing[0] : null;
                 SequenceFlow incSeq = trail.process.sequenceFlows.Find(x => x.id.Equals(incId));
                 SequenceFlow outSeq = trail.process.sequenceFlows.Find(x => x.id.Equals(outId));
                 if (incSeq != null && outSeq != null)
