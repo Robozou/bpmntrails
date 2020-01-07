@@ -22,9 +22,9 @@ namespace DCRReader
         {
             this.trail = trail;
             FindEvents();
-            RemoveEvents();
-            RemoveDanglingEndEvents();
-            RemoveRedundantMergeAndSplitNodes();
+            RemoveEvents(); //This should be expanded to also find end nodes.
+            //RemoveDanglingEndEvents(); This should be removed.
+            RemoveRedundantMergeAndSplitNodes(); //Maybe expand this to include the ability to join linked gates.
             return trail;
         }
 
