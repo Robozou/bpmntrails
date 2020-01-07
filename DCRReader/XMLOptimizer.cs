@@ -31,7 +31,7 @@ namespace DCRReader
             BPMNTrail workingTrail;
             RemoveRepeatingSequences(graph, traces, trail, labelId, validator, out workingTrail);
             RemoveRepeatingEvents(graph, traces, workingTrail, labelId, validator, out workingTrail);
-            //workingTrail = cleaner.Clean(workingTrail);
+            workingTrail = cleaner.Clean(workingTrail);
             return workingTrail;
         }
 
@@ -96,7 +96,7 @@ namespace DCRReader
                     //If it contains XORs that needs fx 12121 move the XOR to after 1.
                     foreach (List<string> repSeq in dict.Keys)
                     {
-                        FixMergeGateLocationsInRepeatedSequences(repSeq, dict[repSeq], trace, workingTrail);
+                        //FixMergeGateLocationsInRepeatedSequences(repSeq, dict[repSeq], trace, workingTrail);
                         string eventId = string.Empty;
                         string gateId = string.Empty;
                         for (int i = 0; i <= dict[repSeq].Item1; i++)
