@@ -31,7 +31,7 @@ namespace DCRReader
             BPMNTrail workingTrail;
             RemoveRepeatingSequences(graph, traces, trail, labelId, validator, out workingTrail);
             RemoveRepeatingEvents(graph, traces, workingTrail, labelId, validator, out workingTrail);
-            workingTrail = cleaner.Clean(workingTrail);
+            //workingTrail = cleaner.Clean(workingTrail);
             return workingTrail;
         }
 
@@ -146,7 +146,7 @@ namespace DCRReader
             List<string> ids = new List<string>();
             for (int i = 0; i < repSeq.Count + tuple.Item1; i++)
             {
-                idString += repSeq[i];
+                idString += trace[i];
                 if (i >= tuple.Item1)
                 {
                     repSeqIds.Add(idString);
@@ -170,6 +170,7 @@ namespace DCRReader
             Task helperTask2 = null;
             ExclusiveGateway eg = null;
             SequenceFlow seqFlow = null;
+            int index = 0;
             string nextId = ids[0];
             string helper = string.Empty;
             while (!current.id.Equals(ids.Last<string>()))
@@ -177,7 +178,10 @@ namespace DCRReader
                 helper = workingTrail.Definition.process.sequenceFlows.Find(x => x.id.Equals(current.outgoing[0])).targetRef;
                 if (helper.Equals(nextId))
                 {
-                    nextId = ids[ids.FindIndex(x => x.Equals(nextId)) + 1];
+                    if (!nextId.Equals(ids.Last<string>()))
+                    {
+                        nextId = ids[index += 1];
+                    }
                     current = workingTrail.Definition.process.tasks.Find(x => x.id.Equals(helper));
                 }
                 else if (workingTrail.Definition.process.exclusiveGateways.Exists(x => x.id.Equals(helper)))
@@ -192,8 +196,12 @@ namespace DCRReader
                             helperTask1 = workingTrail.Definition.process.tasks.Find(x => x.id.Equals(helper));
                             helperTask2 = workingTrail.Definition.process.tasks.Find(x => x.name.Equals(helperTask1.name) && repSeqIds.Contains(x.id));
                             workingTrail.MoveMergeGate(eg.id, helperTask2.id, helperTask1.id);
-                            nextId = ids[ids.FindIndex(x => x.Equals(nextId)) + 1];
+                            if (!nextId.Equals(ids.Last<string>()))
+                            {
+                                nextId = ids[index += 1];
+                            }
                             current = helperTask1;
+                            break;
                         }
                     }
 
