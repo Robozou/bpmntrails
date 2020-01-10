@@ -29,13 +29,13 @@ namespace DCRReader
             Cleaner cleaner = new Cleaner(traces, labelId);
             Validator validator = new Validator(graph, labelId);
             BPMNTrail workingTrail;
-            RemoveRepeatingSequences(graph, traces, trail, labelId, validator, out workingTrail);
-            RemoveRepeatingEvents(graph, traces, workingTrail, labelId, validator, out workingTrail);
+            RemoveRepeatingSequences(graph, traces, trail, validator, out workingTrail);
+            RemoveRepeatingEvents(graph, traces, workingTrail, validator, out workingTrail);
             workingTrail = cleaner.Clean(workingTrail);
             return workingTrail;
         }
 
-        private void RemoveRepeatingEvents(Processor graph, List<List<string>> traces, BPMNTrail trail, Dictionary<string, string> labelId, Validator validator, out BPMNTrail workingTrail)
+        private void RemoveRepeatingEvents(Processor graph, List<List<string>> traces, BPMNTrail trail, Validator validator, out BPMNTrail workingTrail)
         {
             workingTrail = trail;
             BPMNTrail oldTrail;
@@ -79,7 +79,7 @@ namespace DCRReader
             return ids;
         }
 
-        private void RemoveRepeatingSequences(Processor graph, List<List<string>> traces, BPMNTrail trail, Dictionary<string, string> labelId, Validator validator, out BPMNTrail workingTrail)
+        private void RemoveRepeatingSequences(Processor graph, List<List<string>> traces, BPMNTrail trail, Validator validator, out BPMNTrail workingTrail)
         {
             //Key = the repeating sequence Value = the start loc and a list of start locs of the repeats.
             Dictionary<List<string>, Tuple<int, List<int>>> dict;
