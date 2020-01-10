@@ -1,5 +1,4 @@
 ﻿using DCRReader;
-using System;
 
 namespace Tester
 {
