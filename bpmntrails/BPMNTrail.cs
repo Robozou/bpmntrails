@@ -160,6 +160,7 @@ namespace bpmntrails
             {
                 bpmnElement = trail.process.parallelGateways.Find(x => x.id.Equals(eventId));
             }
+
             if (bpmnElement != null)
             {
                 string incId = bpmnElement.incoming.Count == 1 ? bpmnElement.incoming[0] : null;
@@ -174,6 +175,16 @@ namespace bpmntrails
                     AddSequenceFlow(incId, source, target);
                 }
                 return;
+            }
+            else if (trail.process.endEvents.Exists(x => x.id.Equals(eventId)))
+            {
+                bpmnElement = trail.process.endEvents.Find(x => x.id.Equals(eventId));
+                string incId = bpmnElement.incoming.Count == 1 ? bpmnElement.incoming[0] : null;
+                SequenceFlow incSeq = trail.process.sequenceFlows.Find(x => x.id.Equals(incId));
+                if (incSeq != null)
+                {
+                    RemoveEventWithSequences(eventId);
+                }
             }
 
         }
