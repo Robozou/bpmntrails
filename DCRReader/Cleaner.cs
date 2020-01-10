@@ -27,7 +27,7 @@ namespace DCRReader
         {
             this.trail = trail;
             FindEvents();
-            RemoveEvents(); //This should be expanded to also find end nodes.
+            RemoveEvents();
             RemoveRedundantMergeAndSplitNodes(); //Maybe expand this to include the ability to join linked gates.
             return trail;
         }
@@ -109,6 +109,27 @@ namespace DCRReader
                 if (!bpmnElements.Contains(task.id))
                 {
                     toBeDel.Add(task.id);
+                }
+            }
+            foreach (EndEvent ee in trail.Definition.process.endEvents)
+            {
+                if (!bpmnElements.Contains(ee.id))
+                {
+                    toBeDel.Add(ee.id);
+                }
+            }
+            foreach (ExclusiveGateway eg in trail.Definition.process.exclusiveGateways)
+            {
+                if (!bpmnElements.Contains(eg.id))
+                {
+                    toBeDel.Add(eg.id);
+                }
+            }
+            foreach (ParallelGateway pg in trail.Definition.process.parallelGateways)
+            {
+                if (!bpmnElements.Contains(pg.id))
+                {
+                    toBeDel.Add(pg.id);
                 }
             }
             foreach (string id in toBeDel)
