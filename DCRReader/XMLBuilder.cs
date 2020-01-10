@@ -111,7 +111,11 @@ namespace DCRReader
                 foreach (string n in ls)
                 {
                     state = graph.GetHashCode();
-                    if (state.Equals("")) state = "start";
+                    if (state.Equals(""))
+                    {
+                        state = "start";
+                    }
+
                     id = n;
                     graph.Execute(id);
                     newState = graph.GetHashCode();
