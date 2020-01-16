@@ -28,8 +28,32 @@ namespace DCRReader
             this.trail = trail;
             FindEvents();
             RemoveEvents();
-            RemoveRedundantMergeAndSplitNodes(); //Maybe expand this to include the ability to join linked gates.
+            RemoveRedundantMergeAndSplitNodes();
+            CombineLinkedSplitNodes();
             return trail;
+        }
+
+        private void CombineLinkedSplitNodes()
+        {
+            List<SequenceFlow> sequenceFlows = trail.Definition.process.sequenceFlows.FindAll(x => trail.Definition.process.exclusiveGateways.Exists(y => y.id.Equals(x.sourceRef) && y.gatewayDirection.Equals("Diverging")) && trail.Definition.process.exclusiveGateways.Exists(z => z.id.Equals(x.targetRef) && z.gatewayDirection.Equals("Diverging")));
+            Queue<SequenceFlow> seqQueue = new Queue<SequenceFlow>();
+            sequenceFlows.ForEach(seqQueue.Enqueue);
+            SequenceFlow curr = null;
+            ExclusiveGateway firstEg = null;
+            ExclusiveGateway secondEg = null;
+            while (seqQueue.Count > 0)
+            {
+                curr = seqQueue.Dequeue();
+                firstEg = trail.Definition.process.exclusiveGateways.Find(x => x.id.Equals(curr.sourceRef));
+                secondEg = trail.Definition.process.exclusiveGateways.Find(x => x.id.Equals(curr.targetRef));
+                secondEg.outgoing.ForEach(x =>
+                {
+                    firstEg.outgoing.Add(x);
+                    trail.Definition.process.sequenceFlows.Find(y => y.id.Equals(x)).sourceRef = firstEg.id;
+                });
+                secondEg.outgoing.RemoveAll(x => true);
+                trail.RemoveEventWithSequences(secondEg.id);
+            }
         }
 
         private void RemoveRedundantMergeAndSplitNodes()
