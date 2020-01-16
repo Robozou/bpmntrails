@@ -30,6 +30,7 @@ namespace DCRReader
             RemoveEvents();
             RemoveRedundantMergeAndSplitNodes();
             CombineLinkedSplitNodes();
+            CombineLinkedMergeNodes();
             return trail;
         }
 
@@ -53,6 +54,29 @@ namespace DCRReader
                 });
                 secondEg.outgoing.RemoveAll(x => true);
                 trail.RemoveEventWithSequences(secondEg.id);
+            }
+        }
+
+        private void CombineLinkedMergeNodes()
+        {
+            List<SequenceFlow> sequenceFlows = trail.Definition.process.sequenceFlows.FindAll(x => trail.Definition.process.exclusiveGateways.Exists(y => y.id.Equals(x.sourceRef) && y.gatewayDirection.Equals("Converging")) && trail.Definition.process.exclusiveGateways.Exists(z => z.id.Equals(x.targetRef) && z.gatewayDirection.Equals("Converging")));
+            Queue<SequenceFlow> seqQueue = new Queue<SequenceFlow>();
+            sequenceFlows.ForEach(seqQueue.Enqueue);
+            SequenceFlow curr = null;
+            ExclusiveGateway firstEg = null;
+            ExclusiveGateway secondEg = null;
+            while (seqQueue.Count > 0)
+            {
+                curr = seqQueue.Dequeue();
+                firstEg = trail.Definition.process.exclusiveGateways.Find(x => x.id.Equals(curr.sourceRef));
+                secondEg = trail.Definition.process.exclusiveGateways.Find(x => x.id.Equals(curr.targetRef));
+                firstEg.incoming.ForEach(x =>
+                {
+                    secondEg.incoming.Add(x);
+                    trail.Definition.process.sequenceFlows.Find(y => y.id.Equals(x)).targetRef = secondEg.id;
+                });
+                firstEg.incoming.RemoveAll(x => true);
+                trail.RemoveEventWithSequences(firstEg.id);
             }
         }
 
