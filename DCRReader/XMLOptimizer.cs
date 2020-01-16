@@ -152,62 +152,68 @@ namespace DCRReader
                     repSeqIds.Add(idString);
                 }
             }
-            foreach (int pos in startLocs.Item2)
+            if (!(repSeqIds[0] + repSeqIds[0]).Equals(repSeqIds[1]))
             {
-                idString = string.Empty;
-                for (int i = 0; i < pos + repSeq.Count; i++)
+                foreach (int pos in startLocs.Item2)
                 {
-                    idString += trace[i];
-                    if (i >= pos)
+                    idString = string.Empty;
+                    for (int i = 0; i < pos + repSeq.Count; i++)
                     {
-                        ids.Add(idString);
-                    }
-                }
-            }
-
-            Task current = workingTrail.Definition.process.tasks.Find(x => x.id.Equals(repSeqIds.Last<string>()));
-            Task helperTask1 = null;
-            Task helperTask2 = null;
-            ExclusiveGateway eg = null;
-            SequenceFlow seqFlow = null;
-            int index = 0;
-            string nextId = ids[0];
-            string helper = string.Empty;
-            while (!current.id.Equals(ids.Last<string>()))
-            {
-                helper = workingTrail.Definition.process.sequenceFlows.Find(x => x.id.Equals(current.outgoing[0])).targetRef;
-                if (helper.Equals(nextId))
-                {
-                    if (!nextId.Equals(ids.Last<string>()))
-                    {
-                        nextId = ids[index += 1];
-                    }
-                    current = workingTrail.Definition.process.tasks.Find(x => x.id.Equals(helper));
-                }
-                else if (workingTrail.Definition.process.exclusiveGateways.Exists(x => x.id.Equals(helper)))
-                {
-                    eg = workingTrail.Definition.process.exclusiveGateways.Find(x => x.id.Equals(helper));
-                    foreach (string s in eg.outgoing)
-                    {
-                        helper = workingTrail.Definition.process.sequenceFlows.Find(x => x.id.Equals(s)).targetRef;
-                        if (helper.Equals(nextId))
+                        idString += trace[i];
+                        if (i >= pos)
                         {
-                            seqFlow = workingTrail.Definition.process.sequenceFlows.Find(x => x.id.Equals(s));
-                            helperTask1 = workingTrail.Definition.process.tasks.Find(x => x.id.Equals(helper));
-                            helperTask2 = workingTrail.Definition.process.tasks.Find(x => x.name.Equals(helperTask1.name) && repSeqIds.Contains(x.id));
-                            workingTrail.MoveMergeGate(eg.id, workingTrail.Definition.process.sequenceFlows.Find(x => x.targetRef.Equals(helperTask2.id)).sourceRef, helperTask1.id);
-                            if (!nextId.Equals(ids.Last<string>()))
-                            {
-                                nextId = ids[index += 1];
-                            }
-                            current = helperTask1;
-                            break;
+                            ids.Add(idString);
                         }
                     }
+                }
 
+                Task current = workingTrail.Definition.process.tasks.Find(x => x.id.Equals(repSeqIds.Last<string>()));
+                Task helperTask1 = null;
+                Task helperTask2 = null;
+                ExclusiveGateway eg = null;
+                SequenceFlow seqFlow = null;
+                int index = 0;
+                string nextId = ids[0];
+                string helper = string.Empty;
+                while (!current.id.Equals(ids.Last<string>()))
+                {
+                    helper = workingTrail.Definition.process.sequenceFlows.Find(x => x.id.Equals(current.outgoing[0])).targetRef;
+                    if (helper.Equals(nextId))
+                    {
+                        if (!nextId.Equals(ids.Last<string>()))
+                        {
+                            nextId = ids[index += 1];
+                        }
+                        current = workingTrail.Definition.process.tasks.Find(x => x.id.Equals(helper));
+                    }
+                    else if (workingTrail.Definition.process.exclusiveGateways.Exists(x => x.id.Equals(helper)))
+                    {
+                        eg = workingTrail.Definition.process.exclusiveGateways.Find(x => x.id.Equals(helper));
+                        foreach (string s in eg.outgoing)
+                        {
+                            helper = workingTrail.Definition.process.sequenceFlows.Find(x => x.id.Equals(s)).targetRef;
+                            if (helper.Equals(nextId))
+                            {
+                                seqFlow = workingTrail.Definition.process.sequenceFlows.Find(x => x.id.Equals(s));
+                                helperTask1 = workingTrail.Definition.process.tasks.Find(x => x.id.Equals(helper));
+                                helperTask2 = workingTrail.Definition.process.tasks.Find(x => x.name.Equals(helperTask1.name) && repSeqIds.Contains(x.id));
+                                if (!repSeqIds.Contains(current.id))
+                                {
+                                    workingTrail.MoveMergeGate(eg.id, workingTrail.Definition.process.sequenceFlows.Find(x => x.targetRef.Equals(helperTask2.id)).sourceRef, helperTask1.id);
+                                }
+
+                                if (!nextId.Equals(ids.Last<string>()))
+                                {
+                                    nextId = ids[index += 1];
+                                }
+                                current = helperTask1;
+                                break;
+                            }
+                        }
+
+                    }
                 }
             }
-
 
             return workingTrail;
         }
