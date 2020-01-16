@@ -96,7 +96,7 @@ namespace DCRReader
                     //If it contains XORs that needs fx 12121 move the XOR to after 1.
                     foreach (List<string> repSeq in dict.Keys)
                     {
-                        //FixMergeGateLocationsInRepeatedSequences(repSeq, dict[repSeq], trace, workingTrail);
+                        FixMergeGateLocationsInRepeatedSequences(repSeq, dict[repSeq], trace, workingTrail);
                         string eventId = string.Empty;
                         string gateId = string.Empty;
                         for (int i = 0; i <= dict[repSeq].Item1; i++)
@@ -139,20 +139,20 @@ namespace DCRReader
             }
         }
 
-        private BPMNTrail FixMergeGateLocationsInRepeatedSequences(List<string> repSeq, Tuple<int, List<int>> tuple, List<string> trace, BPMNTrail workingTrail)
+        private BPMNTrail FixMergeGateLocationsInRepeatedSequences(List<string> repSeq, Tuple<int, List<int>> startLocs, List<string> trace, BPMNTrail workingTrail)
         {
             string idString = string.Empty;
             List<string> repSeqIds = new List<string>();
             List<string> ids = new List<string>();
-            for (int i = 0; i < repSeq.Count + tuple.Item1; i++)
+            for (int i = 0; i < repSeq.Count + startLocs.Item1; i++)
             {
                 idString += trace[i];
-                if (i >= tuple.Item1)
+                if (i >= startLocs.Item1)
                 {
                     repSeqIds.Add(idString);
                 }
             }
-            foreach (int pos in tuple.Item2)
+            foreach (int pos in startLocs.Item2)
             {
                 idString = string.Empty;
                 for (int i = 0; i < pos + repSeq.Count; i++)
