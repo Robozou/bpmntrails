@@ -195,7 +195,7 @@ namespace DCRReader
                             seqFlow = workingTrail.Definition.process.sequenceFlows.Find(x => x.id.Equals(s));
                             helperTask1 = workingTrail.Definition.process.tasks.Find(x => x.id.Equals(helper));
                             helperTask2 = workingTrail.Definition.process.tasks.Find(x => x.name.Equals(helperTask1.name) && repSeqIds.Contains(x.id));
-                            workingTrail.MoveMergeGate(eg.id, helperTask2.id, helperTask1.id);
+                            workingTrail.MoveMergeGate(eg.id, workingTrail.Definition.process.sequenceFlows.Find(x => x.targetRef.Equals(helperTask2.id)).sourceRef, helperTask1.id);
                             if (!nextId.Equals(ids.Last<string>()))
                             {
                                 nextId = ids[index += 1];
