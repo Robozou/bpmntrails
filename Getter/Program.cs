@@ -8,6 +8,8 @@ namespace Getter
 {
     class Program
     {
+        static string TraceLoc = "..\\..\\..\\..\\testTrace.xml";
+        static string GraphLoc = "..\\..\\..\\..\\testGraph.xml";
         static string[] lines = File.ReadAllLines("..\\..\\..\\..\\..\\login.txt");
         static string testgraph = "13709";
         static string locationOfGraphList = "..\\..\\..\\..\\..\\graphs.xml";
@@ -49,8 +51,8 @@ namespace Getter
         {
             XmlDocument graph = GetGraph(testgraph);
             XmlDocument trace = GetTrace(testgraph);
-            SaveXMLDoc(graph, "..\\..\\..\\..\\testGraph.xml");
-            SaveXMLDoc(trace, "..\\..\\..\\..\\testTrace.xml");
+            SaveXMLDoc(graph, GraphLoc);
+            SaveXMLDoc(trace, TraceLoc);
         }
 
         private static void SaveXMLDoc(XmlDocument xml, string fileLoc)
