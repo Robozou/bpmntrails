@@ -3,7 +3,7 @@ using System;
 
 namespace Tester
 {
-    class MainBoi
+    public class Trailer
     {
         static void Main(string[] args)
         {

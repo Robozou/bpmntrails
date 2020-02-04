@@ -33,7 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Tester.MainBoi</StartupObject>
+    <StartupObject>Tester.TestProgram</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="bpmntrails">
@@ -56,7 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Driver.cs" />
-    <Compile Include="MainBoi.cs" />
+    <Compile Include="Trailer.cs" />
     <Compile Include="TestProgram.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
