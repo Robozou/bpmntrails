@@ -10,8 +10,8 @@ namespace Getter
     {
         static string TraceLoc = "..\\..\\..\\..\\testTrace.xml";
         static string GraphLoc = "..\\..\\..\\..\\testGraph.xml";
-        static string[] lines = File.ReadAllLines("..\\..\\..\\..\\..\\login.txt");
         static string testgraph = "13709";
+        static string[] lines = File.ReadAllLines("..\\..\\..\\..\\..\\login.txt");
         static string locationOfGraphList = "..\\..\\..\\..\\..\\graphs.xml";
         static void Main(string[] args)
         {
