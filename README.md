@@ -6,7 +6,7 @@ The project is independent and relies on no third party tools.
 
 To use the program:
 Download and build the project.
-In "bpmntrails\Tester\bin\Debug" find the file Tester.exe.
+In "bpmntrails/Tester/bin/Debug" find the file Tester.exe.
 Execute Tester.exe with the arguments: "location/of/output/filename.xml" "location/of/graph/filename.xml" "location/of/traces/filename.xml".
 Find the newly created BPMN graph in the specified location.
 
