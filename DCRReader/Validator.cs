@@ -22,7 +22,7 @@ namespace DCRReader
         public bool Validate(BPMNTrail trail)
         {
             this.trail = trail;
-            StartEvent se = trail.Definition.process.startEvents[0];
+            StartEvent se = trail.GetFirstStartEvent();
             RunStates(se, graph);
             return results.TrueForAll(x => x.Equals(true));
         }
@@ -35,7 +35,7 @@ namespace DCRReader
                 StartEvent se = (StartEvent)bpmnEvent;
                 foreach (string seqId in se.outgoing)
                 {
-                    RunStates(trail.Definition.process.sequenceFlows.Find(x => x.id.Equals(seqId)), graph);
+                    RunStates(trail.GetSequenceFlow(seqId), graph);
                 }
             }
             else if (bpmnEvent.GetType().Equals(typeof(EndEvent)))
@@ -50,7 +50,7 @@ namespace DCRReader
                     graph.Execute(labelId[task.name]);
                     foreach (string seqId in task.outgoing)
                     {
-                        RunStates(trail.Definition.process.sequenceFlows.Find(x => x.id.Equals(seqId)), graph);
+                        RunStates(trail.GetSequenceFlow(seqId), graph);
                     }
                 }
                 catch (Exception)
@@ -63,7 +63,7 @@ namespace DCRReader
                 ParallelGateway pg = (ParallelGateway)bpmnEvent;
                 foreach (string seqId in pg.outgoing)
                 {
-                    RunStates(trail.Definition.process.sequenceFlows.Find(x => x.id.Equals(seqId)), graph);
+                    RunStates(trail.GetSequenceFlow(seqId), graph);
                 }
             }
             else if (bpmnEvent.GetType().Equals(typeof(ExclusiveGateway)))
@@ -71,7 +71,7 @@ namespace DCRReader
                 ExclusiveGateway eg = (ExclusiveGateway)bpmnEvent;
                 foreach (string seqId in eg.outgoing)
                 {
-                    RunStates(trail.Definition.process.sequenceFlows.Find(x => x.id.Equals(seqId)), graph);
+                    RunStates(trail.GetSequenceFlow(seqId), graph);
                 }
             }
         }
