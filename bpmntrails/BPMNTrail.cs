@@ -250,6 +250,17 @@ namespace bpmntrails
             }
 
         }
+
+        public SequenceFlow GetSequenceFlowByTargetRefId(string id)
+        {
+            return trail.process.sequenceFlows.Find(x => x.targetRef.Equals(id));
+        }
+
+        public Task GetTaskByNameIfIdInList(string name, List<string> idList)
+        {
+            return trail.process.tasks.Find(x => x.name.Equals(name) && idList.Contains(x.id));
+        }
+
         //NEEDS REFACTORING BADLY
         public void RemoveEventWithSequences(string eventId)
         {
@@ -700,13 +711,13 @@ namespace bpmntrails
             }
         }
 
-        public Definition Definition
-        {
-            get
-            {
-                return trail;
-            }
-        }
+        //public Definition Definition
+        //{
+        //    get
+        //    {
+        //        return trail;
+        //    }
+        //}
 
         public void PrintTrail(string fileLoc)
         {
