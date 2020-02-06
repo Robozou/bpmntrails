@@ -94,6 +94,96 @@ namespace bpmntrails
             }
         }
 
+        public StartEvent GetStartEvent(string id)
+        {
+            return trail.process.startEvents.Find(x => x.id.Equals(id));
+        }
+
+        public bool EndEventExists(string id)
+        {
+            return trail.process.endEvents.Exists(x => x.id.Equals(id));
+        }
+
+        public bool ExclusiveGatewayExists(string id)
+        {
+            return trail.process.exclusiveGateways.Exists(x => x.id.Equals(id));
+        }
+
+        public bool ParallelGatewayExists(string id)
+        {
+            return trail.process.parallelGateways.Exists(x => x.id.Equals(id));
+        }
+
+        public bool TaskExists(string id)
+        {
+            return trail.process.tasks.Exists(x => x.id.Equals(id));
+        }
+
+        public SequenceFlow GetSequenceFlow(string id)
+        {
+            return trail.process.sequenceFlows.Find(x => x.id.Equals(id));
+        }
+
+        public Task GetTask(string id)
+        {
+            return trail.process.tasks.Find(x => x.id.Equals(id));
+        }
+
+        public StartEvent GetFirstStartEvent()
+        {
+            return trail.process.startEvents[0];
+        }
+
+        public List<ExclusiveGateway> GetExclusiveGateWays()
+        {
+            return trail.process.exclusiveGateways;
+        }
+
+        public List<ParallelGateway> GetParallelGateWays()
+        {
+            return trail.process.parallelGateways;
+        }
+
+        public List<EndEvent> GetEndEvents()
+        {
+            return trail.process.endEvents;
+        }
+
+        public void ChangeSourceRefOnSequenceFlow(string seqFlowId, string newSourceRef)
+        {
+            trail.process.sequenceFlows.Find(y => y.id.Equals(seqFlowId)).sourceRef = newSourceRef;
+        }
+
+        public void ChangeTargetRefOnSequenceFlow(string seqFlowId, string newTargetRef)
+        {
+            trail.process.sequenceFlows.Find(y => y.id.Equals(seqFlowId)).targetRef = newTargetRef;
+        }
+
+        public List<Task> GetTasks()
+        {
+            return trail.process.tasks;
+        }
+
+        public List<SequenceFlow> GetSequenceFlowsBetweenSplitNodes()
+        {
+            return trail.process.sequenceFlows.FindAll(x => trail.process.exclusiveGateways.Exists(y => y.id.Equals(x.sourceRef) && y.gatewayDirection.Equals("Diverging")) && trail.process.exclusiveGateways.Exists(z => z.id.Equals(x.targetRef) && z.gatewayDirection.Equals("Diverging")));
+        }
+
+        public List<SequenceFlow> GetSequenceFlowsBetweenMergeNodes()
+        {
+            return trail.process.sequenceFlows.FindAll(x => trail.process.exclusiveGateways.Exists(y => y.id.Equals(x.sourceRef) && y.gatewayDirection.Equals("Converging")) && trail.process.exclusiveGateways.Exists(z => z.id.Equals(x.targetRef) && z.gatewayDirection.Equals("Converging")));
+        }
+
+        public ExclusiveGateway GetExclusiveGateWay(string id)
+        {
+            return trail.process.exclusiveGateways.Find(x => x.id.Equals(id));
+        }
+
+        public ParallelGateway GetParallelGateWay(string id)
+        {
+            return trail.process.parallelGateways.Find(x => x.id.Equals(id));
+        }
+
         public void AddBackLoopingSequence(string mergeGateId, string eventId, string seqFlowBackLoopId)
         {
             Task task = trail.process.tasks.Find(x => x.id.Equals(eventId));
