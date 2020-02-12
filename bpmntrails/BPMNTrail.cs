@@ -99,6 +99,11 @@ namespace bpmntrails
             return trail.process.startEvents.Find(x => x.id.Equals(id));
         }
 
+        public List<StartEvent> GetStartEvents()
+        {
+            return trail.process.startEvents;
+        }
+
         public bool EndEventExists(string id)
         {
             return trail.process.endEvents.Exists(x => x.id.Equals(id));
@@ -249,6 +254,17 @@ namespace bpmntrails
                 }
             }
 
+        }
+
+        public List<BPMNElement> GetAllElements()
+        {
+            List<BPMNElement> elements = new List<BPMNElement>();
+            GetTasks().ForEach(x => elements.Add(x));
+            GetExclusiveGateWays().ForEach(x => elements.Add(x));
+            GetParallelGateWays().ForEach(x => elements.Add(x));
+            GetEndEvents().ForEach(x => elements.Add(x));
+            GetStartEvents().ForEach(x => elements.Add(x));
+            return elements;
         }
 
         public SequenceFlow GetSequenceFlowByTargetRefId(string id)
@@ -558,6 +574,7 @@ namespace bpmntrails
             UpdatePlacement();
         }
 
+        //TODO REFACTOR
         public void AddSequenceFlow(string id, string sourceId, string targetId)
         {
             if (!trail.process.sequenceFlows.Exists(seq => seq.sourceRef.Equals(sourceId) && seq.targetRef.Equals(targetId) && seq.id.Equals(id)))

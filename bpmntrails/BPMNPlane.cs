@@ -4,7 +4,7 @@ using System.Xml.Serialization;
 namespace bpmntrails
 {
     [XmlRoot(ElementName = "BPMNPlane", Namespace = "http://www.omg.org/spec/BPMN/20100524/DI")]
-    public class BPMNPlane
+    public class BPMNPlane : BPMNElement
     {
         [XmlElement(ElementName = "BPMNShape", Namespace = "http://www.omg.org/spec/BPMN/20100524/DI")]
         public List<BPMNShape> bpmnShapes = new List<BPMNShape>();
@@ -12,7 +12,5 @@ namespace bpmntrails
         public List<BPMNEdge> bpmnEdges = new List<BPMNEdge>();
         [XmlAttribute(AttributeName = "bpmnElement")]
         public string bpmnElement { get; set; }
-        [XmlAttribute(AttributeName = "id")]
-        public string id { get; set; }
     }
 }
