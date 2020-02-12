@@ -50,7 +50,7 @@ namespace DCRReader
                 secondEg.outgoing.ForEach(x =>
                 {
                     firstEg.outgoing.Add(x);
-                    trail.ChangeSourceRefOnSequenceFlow(x, firstEg.id); 
+                    trail.ChangeSourceRefOnSequenceFlow(x, firstEg.id);
                 });
                 secondEg.outgoing.RemoveAll(x => true);
                 trail.RemoveEventWithSequences(secondEg.id);
@@ -152,38 +152,14 @@ namespace DCRReader
         private void RemoveEvents()
         {
             List<string> toBeDel = new List<string>();
-            foreach (Task task in trail.GetTasks())
+            foreach (BPMNElement element in trail.GetAllElements())
             {
-                if (!bpmnElements.Contains(task.id))
+                if (!bpmnElements.Contains(element.id))
                 {
-                    toBeDel.Add(task.id);
+                    toBeDel.Add(element.id);
                 }
             }
-            foreach (EndEvent ee in trail.GetEndEvents())
-            {
-                if (!bpmnElements.Contains(ee.id))
-                {
-                    toBeDel.Add(ee.id);
-                }
-            }
-            foreach (ExclusiveGateway eg in trail.GetExclusiveGateWays())
-            {
-                if (!bpmnElements.Contains(eg.id))
-                {
-                    toBeDel.Add(eg.id);
-                }
-            }
-            foreach (ParallelGateway pg in trail.GetParallelGateWays())
-            {
-                if (!bpmnElements.Contains(pg.id))
-                {
-                    toBeDel.Add(pg.id);
-                }
-            }
-            foreach (string id in toBeDel)
-            {
-                trail.RemoveTaskAndMoveSequences(id);
-            }
+            toBeDel.ForEach(x => trail.RemoveTaskAndMoveSequences(x));
         }
     }
 }
