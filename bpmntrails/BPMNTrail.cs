@@ -219,6 +219,11 @@ namespace bpmntrails
         {
             return GetBPMNEventElements().Exists(ele => ele.id.Equals(id));
         }
+
+        private bool IsIdInUse(string id)
+        {
+            return GetAllElements().Exists(x => x.id.Equals(id));
+        }
         #endregion
 
         public void AddBackLoopingSequence(string mergeGateId, string eventId, string seqFlowBackLoopId)
@@ -285,7 +290,6 @@ namespace bpmntrails
                     RemoveEventWithSequences(eventId);
                 }
             }
-
         }
 
         public Task GetTaskByNameIfIdInList(string name, List<string> idList)
