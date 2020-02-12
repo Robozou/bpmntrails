@@ -566,7 +566,6 @@ namespace bpmntrails
         }
         #endregion
 
-        //TODO REFACTOR
         public void AddSequenceFlow(string id, string sourceId, string targetId)
         {
             if (!trail.process.sequenceFlows.Exists(seq => seq.sourceRef.Equals(sourceId) && seq.targetRef.Equals(targetId) && seq.id.Equals(id)))
@@ -582,96 +581,85 @@ namespace bpmntrails
                 string targetType = "";
                 int x_target = 0, x_source = 0, y_target = 0, y_source = 0;
                 Bounds b;
-                foreach (StartEvent se in trail.process.startEvents)
+                if (trail.process.startEvents.Exists(se => se.id.Equals(sourceId)))
                 {
-                    if (se.id.Equals(sourceId))
-                    {
-                        se.outgoing.Add(id);
-                        sourceType = "se";
-                        b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(se.id + "_shape")).bounds;
-                        x_source = int.Parse(b.X);
-                        y_source = int.Parse(b.Y);
-                        break;
-                    }
-                    else if (se.id.Equals(targetId))
-                    {
-                        Console.Write("Cannot target start events");
-                        break;
-                    }
+                    StartEvent se = trail.process.startEvents.Find(see => see.id.Equals(sourceId));
+                    se.outgoing.Add(id);
+                    sourceType = "se";
+                    b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(se.id + "_shape")).bounds;
+                    x_source = int.Parse(b.X);
+                    y_source = int.Parse(b.Y);
                 }
-                foreach (EndEvent ee in trail.process.endEvents)
+                else if (trail.process.startEvents.Exists(se => se.id.Equals(targetId)))
                 {
-                    if (ee.id.Equals(targetId))
-                    {
-                        ee.incoming.Add(id);
-                        targetType = "se";
-                        b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(ee.id + "_shape")).bounds;
-                        x_target = int.Parse(b.X);
-                        y_target = int.Parse(b.Y);
-                        break;
-                    }
-                    else if (ee.id.Equals(sourceId))
-                    {
-                        Console.Write("Cannot use end events as source");
-                        break;
-                    }
+                    Console.Write("Cannot target start events");
                 }
-                foreach (Task task in trail.process.tasks)
+                if (trail.process.endEvents.Exists(ee => ee.id.Equals(targetId)))
                 {
-                    if (task.id.Equals(sourceId))
-                    {
-                        task.outgoing.Add(id);
-                        sourceType = "task";
-                        b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(task.id + "_shape")).bounds;
-                        x_source = int.Parse(b.X);
-                        y_source = int.Parse(b.Y);
-                    }
-                    else if (task.id.Equals(targetId))
-                    {
-                        task.incoming.Add(id);
-                        targetType = "task";
-                        b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(task.id + "_shape")).bounds;
-                        x_target = int.Parse(b.X);
-                        y_target = int.Parse(b.Y);
-                    }
+                    EndEvent ee = trail.process.endEvents.Find(eee => eee.id.Equals(targetId));
+                    ee.incoming.Add(id);
+                    targetType = "se";
+                    b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(ee.id + "_shape")).bounds;
+                    x_target = int.Parse(b.X);
+                    y_target = int.Parse(b.Y);
                 }
-                foreach (ParallelGateway par in trail.process.parallelGateways)
+                else if (trail.process.endEvents.Exists(se => se.id.Equals(sourceId)))
                 {
-                    if (par.id.Equals(sourceId))
-                    {
-                        par.outgoing.Add(id);
-                        sourceType = "gate";
-                        b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(par.id + "_shape")).bounds;
-                        x_source = int.Parse(b.X);
-                        y_source = int.Parse(b.Y);
-                    }
-                    else if (par.id.Equals(targetId))
-                    {
-                        par.incoming.Add(id);
-                        targetType = "gate";
-                        b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(par.id + "_shape")).bounds;
-                        x_target = int.Parse(b.X);
-                        y_target = int.Parse(b.Y);
-                    }
+                    Console.Write("Cannot use end events as source");
                 }
-                foreach (ExclusiveGateway exc in trail.process.exclusiveGateways)
+                if (trail.process.tasks.Exists(task => task.id.Equals(sourceId)))
                 {
-                    if (exc.id.Equals(sourceId))
-                    {
-                        exc.outgoing.Add(id);
-                        sourceType = "gate";
-                        b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(exc.id + "_shape")).bounds;
-                        x_source = int.Parse(b.X);
-                        y_source = int.Parse(b.Y);
-                    }
-                    else if (exc.id.Equals(targetId))
-                    {
-                        exc.incoming.Add(id);
-                        targetType = "gate";
-                        b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(exc.id + "_shape")).bounds;
-                        x_target = int.Parse(b.X);
-                        y_target = int.Parse(b.Y);
-                    }
+                    Task task = trail.process.tasks.Find(taske => taske.id.Equals(sourceId));
+                    task.outgoing.Add(id);
+                    sourceType = "task";
+                    b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(task.id + "_shape")).bounds;
+                    x_source = int.Parse(b.X);
+                    y_source = int.Parse(b.Y);
+                }
+                else if (trail.process.tasks.Exists(task => task.id.Equals(targetId)))
+                {
+                    Task task = trail.process.tasks.Find(taske => taske.id.Equals(targetId));
+                    task.incoming.Add(id);
+                    targetType = "task";
+                    b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(task.id + "_shape")).bounds;
+                    x_target = int.Parse(b.X);
+                    y_target = int.Parse(b.Y);
+                }
+                if (trail.process.parallelGateways.Exists(par => par.id.Equals(sourceId)))
+                {
+                    ParallelGateway par = trail.process.parallelGateways.Find(pare => pare.id.Equals(sourceId));
+                    par.outgoing.Add(id);
+                    sourceType = "gate";
+                    b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(par.id + "_shape")).bounds;
+                    x_source = int.Parse(b.X);
+                    y_source = int.Parse(b.Y);
+                }
+                else if (trail.process.parallelGateways.Exists(par => par.id.Equals(targetId)))
+                {
+                    ParallelGateway par = trail.process.parallelGateways.Find(pare => pare.id.Equals(targetId));
+                    par.incoming.Add(id);
+                    targetType = "gate";
+                    b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(par.id + "_shape")).bounds;
+                    x_target = int.Parse(b.X);
+                    y_target = int.Parse(b.Y);
+                }
+                if (trail.process.exclusiveGateways.Exists(exc => exc.id.Equals(sourceId)))
+                {
+                    ExclusiveGateway exc = trail.process.exclusiveGateways.Find(exce => exce.id.Equals(sourceId));
+                    exc.outgoing.Add(id);
+                    sourceType = "gate";
+                    b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(exc.id + "_shape")).bounds;
+                    x_source = int.Parse(b.X);
+                    y_source = int.Parse(b.Y);
+                }
+                else if (trail.process.exclusiveGateways.Exists(exc => exc.id.Equals(targetId)))
+                {
+                    ExclusiveGateway exc = trail.process.exclusiveGateways.Find(exce => exce.id.Equals(targetId));
+                    exc.incoming.Add(id);
+                    targetType = "gate";
+                    b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(exc.id + "_shape")).bounds;
+                    x_target = int.Parse(b.X);
+                    y_target = int.Parse(b.Y);
                 }
                 BPMNEdge bPMNEdge = new BPMNEdge
                 {
