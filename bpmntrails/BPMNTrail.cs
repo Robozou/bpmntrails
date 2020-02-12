@@ -38,35 +38,35 @@ namespace bpmntrails
 
         public void MoveMergeGate(string mergeGateId, string elementIdToMoveTo, string elementIdToMoveFrom)
         {
-            ExclusiveGateway eg = trail.process.exclusiveGateways.Find(x => x.id.Equals(mergeGateId));
+            ExclusiveGateway eg = GetExclusiveGateWay(mergeGateId);
             dynamic moveToElement = null;
-            if (trail.process.tasks.Exists(x => x.id.Equals(elementIdToMoveTo)))
+            if (TaskExists(elementIdToMoveTo))
             {
-                moveToElement = trail.process.tasks.Find(x => x.id.Equals(elementIdToMoveTo));
+                moveToElement = GetTask(elementIdToMoveTo);
             }
-            else if (trail.process.exclusiveGateways.Exists(x => x.id.Equals(elementIdToMoveTo)))
+            else if (ExclusiveGatewayExists(elementIdToMoveTo))
             {
-                moveToElement = trail.process.exclusiveGateways.Find(x => x.id.Equals(elementIdToMoveTo));
+                moveToElement = GetExclusiveGateWay(elementIdToMoveTo);
             }
             dynamic moveFromElement = null;
-            if (trail.process.tasks.Exists(x => x.id.Equals(elementIdToMoveFrom)))
+            if (TaskExists(elementIdToMoveFrom))
             {
-                moveFromElement = trail.process.tasks.Find(x => x.id.Equals(elementIdToMoveFrom));
+                moveFromElement = GetTask(elementIdToMoveFrom);
             }
-            else if (trail.process.exclusiveGateways.Exists(x => x.id.Equals(elementIdToMoveFrom)))
+            else if (ExclusiveGatewayExists(elementIdToMoveFrom))
             {
-                moveFromElement = trail.process.exclusiveGateways.Find(x => x.id.Equals(elementIdToMoveFrom));
+                moveFromElement = GetExclusiveGateWay(elementIdToMoveFrom);
             }
 
             if (moveToElement != null && moveFromElement != null)
             {
 
-                string idFromMoveToElement = trail.process.sequenceFlows.Find(x => x.id.Equals(moveToElement.outgoing[0])).id;
-                string idToMergeGate = trail.process.sequenceFlows.Find(x => x.id.Equals(eg.incoming[0])).id;
-                string idToMoveFromElement = trail.process.sequenceFlows.Find(x => x.id.Equals(moveFromElement.incoming[0])).id;
+                string idFromMoveToElement = GetSequenceFlow(moveToElement.outgoing[0]).id;
+                string idToMergeGate = GetSequenceFlow(eg.incoming[0]).id;
+                string idToMoveFromElement = GetSequenceFlow(moveFromElement.incoming[0]).id;
 
-                string idOfEventBeforeMergeGate = trail.process.sequenceFlows.Find(x => x.id.Equals(idToMergeGate)).sourceRef;
-                string idAfterMoveToEvent = trail.process.sequenceFlows.Find(x => x.id.Equals(idFromMoveToElement)).targetRef;
+                string idOfEventBeforeMergeGate = GetSequenceFlow(idToMergeGate).sourceRef;
+                string idAfterMoveToEvent = GetSequenceFlow(idFromMoveToElement).targetRef;
 
                 List<string> ls1 = new List<string>
             {
@@ -84,9 +84,21 @@ namespace bpmntrails
                 trail.process.sequenceFlows.RemoveAll(x => ls1.Contains(x.id));
                 trail.diagram.bpmnPlane.bpmnEdges.RemoveAll(x => ls2.Contains(x.id));
 
-                trail.process.tasks.ForEach(x => { x.incoming.RemoveAll(y => ls1.Contains(y)); x.outgoing.RemoveAll(y => ls1.Contains(y)); });
-                trail.process.exclusiveGateways.ForEach(x => { x.incoming.RemoveAll(y => ls1.Contains(y)); x.outgoing.RemoveAll(y => ls1.Contains(y)); });
-                trail.process.parallelGateways.ForEach(x => { x.incoming.RemoveAll(y => ls1.Contains(y)); x.outgoing.RemoveAll(y => ls1.Contains(y)); });
+                trail.process.tasks.ForEach(x =>
+                    {
+                        x.incoming.RemoveAll(y => ls1.Contains(y));
+                        x.outgoing.RemoveAll(y => ls1.Contains(y));
+                    });
+                trail.process.exclusiveGateways.ForEach(x =>
+                    {
+                        x.incoming.RemoveAll(y => ls1.Contains(y));
+                        x.outgoing.RemoveAll(y => ls1.Contains(y));
+                    });
+                trail.process.parallelGateways.ForEach(x =>
+                    {
+                        x.incoming.RemoveAll(y => ls1.Contains(y));
+                        x.outgoing.RemoveAll(y => ls1.Contains(y));
+                    });
 
                 AddSequenceFlow(idFromMoveToElement + "neu", moveToElement.id, eg.id);
                 AddSequenceFlow(idToMergeGate + "neu", eg.id, idAfterMoveToEvent);
@@ -103,6 +115,11 @@ namespace bpmntrails
         public List<StartEvent> GetStartEvents()
         {
             return trail.process.startEvents;
+        }
+
+        public bool StartEventExists(string id)
+        {
+            return trail.process.startEvents.Exists(x => x.id.Equals(id));
         }
 
         public bool EndEventExists(string id)
@@ -148,6 +165,11 @@ namespace bpmntrails
         public List<ParallelGateway> GetParallelGateWays()
         {
             return trail.process.parallelGateways;
+        }
+
+        public EndEvent GetEndEvent(string id)
+        {
+            return trail.process.endEvents.Find(x => x.id.Equals(id));
         }
 
         public List<EndEvent> GetEndEvents()
@@ -224,23 +246,28 @@ namespace bpmntrails
         {
             return GetAllElements().Exists(x => x.id.Equals(id));
         }
+
+        public Task GetTaskByNameIfIdInList(string name, List<string> idList)
+        {
+            return trail.process.tasks.Find(x => x.name.Equals(name) && idList.Contains(x.id));
+        }
         #endregion
 
         public void AddBackLoopingSequence(string mergeGateId, string eventId, string seqFlowBackLoopId)
         {
-            Task task = trail.process.tasks.Find(x => x.id.Equals(eventId));
+            Task task = GetTask(eventId);
             if (task != null)
             {
                 string incId = task.incoming[0];
-                SequenceFlow incSeq = trail.process.sequenceFlows.Find(x => x.id.Equals(incId));
+                SequenceFlow incSeq = GetSequenceFlow(incId);
                 if (incSeq != null)
                 {
                     string source = incSeq.sourceRef;
-                    if (trail.process.exclusiveGateways.Exists(x => x.id.Equals(source)))
+                    if (ExclusiveGatewayExists(source))
                     {
                         AddSequenceFlow(seqFlowBackLoopId, source, mergeGateId);
                     }
-                    else if (trail.process.tasks.Exists(x => x.id.Equals(source)))
+                    else if (TaskExists(source))
                     {
                         InsertExclusiveGate(eventId, mergeGateId + eventId + seqFlowBackLoopId, seqFlowBackLoopId + mergeGateId + eventId);
                         AddSequenceFlow(seqFlowBackLoopId, mergeGateId + eventId + seqFlowBackLoopId, mergeGateId);
@@ -252,25 +279,25 @@ namespace bpmntrails
         public void RemoveTaskAndMoveSequences(string eventId)
         {
             dynamic bpmnElement = null;
-            if (trail.process.tasks.Exists(x => x.id.Equals(eventId)))
+            if (TaskExists(eventId))
             {
-                bpmnElement = trail.process.tasks.Find(x => x.id.Equals(eventId));
+                bpmnElement = GetTask(eventId);
             }
-            else if (trail.process.exclusiveGateways.Exists(x => x.id.Equals(eventId)))
+            else if (ExclusiveGatewayExists(eventId))
             {
-                bpmnElement = trail.process.exclusiveGateways.Find(x => x.id.Equals(eventId));
+                bpmnElement = GetExclusiveGateWay(eventId); ;
             }
-            else if (trail.process.parallelGateways.Exists(x => x.id.Equals(eventId)))
+            else if (ParallelGatewayExists(eventId))
             {
-                bpmnElement = trail.process.parallelGateways.Find(x => x.id.Equals(eventId));
+                bpmnElement = GetParallelGateWay(eventId);
             }
 
             if (bpmnElement != null)
             {
                 string incId = bpmnElement.incoming.Count == 1 ? bpmnElement.incoming[0] : null;
                 string outId = bpmnElement.outgoing.Count == 1 ? bpmnElement.outgoing[0] : null;
-                SequenceFlow incSeq = trail.process.sequenceFlows.Find(x => x.id.Equals(incId));
-                SequenceFlow outSeq = trail.process.sequenceFlows.Find(x => x.id.Equals(outId));
+                SequenceFlow incSeq = GetSequenceFlow(incId);
+                SequenceFlow outSeq = GetSequenceFlow(outId);
                 if (incSeq != null && outSeq != null)
                 {
                     string source = incSeq.sourceRef;
@@ -280,9 +307,9 @@ namespace bpmntrails
                 }
                 return;
             }
-            else if (trail.process.endEvents.Exists(x => x.id.Equals(eventId)))
+            else if (EndEventExists(eventId))
             {
-                bpmnElement = trail.process.endEvents.Find(x => x.id.Equals(eventId));
+                bpmnElement = GetEndEvent(eventId);
                 string incId = bpmnElement.incoming.Count == 1 ? bpmnElement.incoming[0] : null;
                 SequenceFlow incSeq = trail.process.sequenceFlows.Find(x => x.id.Equals(incId));
                 if (incSeq != null)
@@ -292,136 +319,72 @@ namespace bpmntrails
             }
         }
 
-        public Task GetTaskByNameIfIdInList(string name, List<string> idList)
+        private void RemoveEventOutGoing(List<string> outgoing)
         {
-            return trail.process.tasks.Find(x => x.name.Equals(name) && idList.Contains(x.id));
+            outgoing.ForEach(outseq =>
+            {
+                trail.process.sequenceFlows.RemoveAll(x => x.id.Equals(outseq));
+                trail.process.endEvents.ForEach(x => x.incoming.Remove(outseq));
+                trail.process.tasks.ForEach(x => x.incoming.Remove(outseq));
+                trail.process.exclusiveGateways.ForEach(x => x.incoming.Remove(outseq));
+                trail.process.parallelGateways.ForEach(x => x.incoming.Remove(outseq));
+                trail.diagram.bpmnPlane.bpmnEdges.RemoveAll(x => x.id.Equals(outseq + "_edge"));
+            });
         }
 
-        //TODO NEEDS REFACTORING BADLY
+        private void RemoveEventInGoing(List<string> incoming)
+        {
+            incoming.ForEach(inseq =>
+            {
+                trail.process.sequenceFlows.RemoveAll(x => x.id.Equals(inseq));
+                trail.process.startEvents.ForEach(x => x.outgoing.Remove(inseq));
+                trail.process.tasks.ForEach(x => x.outgoing.Remove(inseq));
+                trail.process.exclusiveGateways.ForEach(x => x.outgoing.Remove(inseq));
+                trail.process.parallelGateways.ForEach(x => x.outgoing.Remove(inseq));
+                trail.diagram.bpmnPlane.bpmnEdges.RemoveAll(x => x.id.Equals(inseq + "_edge"));
+            });
+        }
+
         public void RemoveEventWithSequences(string eventId)
         {
-            List<StartEvent> sel = new List<StartEvent>();
-            foreach (StartEvent se in trail.process.startEvents)
+            if (StartEventExists(eventId))
             {
-                if (se.id.Equals(eventId))
-                {
-                    foreach (string outseq in se.outgoing)
-                    {
-                        trail.process.sequenceFlows.RemoveAll(x => x.id.Equals(outseq));
-                        trail.process.endEvents.ForEach(x => x.incoming.Remove(outseq));
-                        trail.process.tasks.ForEach(x => x.incoming.Remove(outseq));
-                        trail.process.exclusiveGateways.ForEach(x => x.incoming.Remove(outseq));
-                        trail.process.parallelGateways.ForEach(x => x.incoming.Remove(outseq));
-                        trail.diagram.bpmnPlane.bpmnEdges.RemoveAll(x => x.id.Equals(outseq + "_edge"));
-                    }
-                    sel.Add(se);
-                }
+                StartEvent se = GetStartEvent(eventId);
+                RemoveEventOutGoing(se.outgoing);
+                trail.process.startEvents.RemoveAll(y => y.id.Equals(se.id));
+                trail.diagram.bpmnPlane.bpmnShapes.RemoveAll(y => y.id.Equals(se.id + "_shape"));
             }
-            sel.ForEach(x => trail.process.startEvents.RemoveAll(y => y.id.Equals(x.id)));
-            sel.ForEach(x => trail.diagram.bpmnPlane.bpmnShapes.RemoveAll(y => y.id.Equals(x.id + "_shape")));
-            List<EndEvent> eel = new List<EndEvent>();
-            foreach (EndEvent ee in trail.process.endEvents)
+            if (EndEventExists(eventId))
             {
-                if (ee.id.Equals(eventId))
-                {
-                    foreach (string inseq in ee.incoming)
-                    {
-                        trail.process.sequenceFlows.RemoveAll(x => x.id.Equals(inseq));
-                        trail.process.startEvents.ForEach(x => x.outgoing.Remove(inseq));
-                        trail.process.tasks.ForEach(x => x.outgoing.Remove(inseq));
-                        trail.process.exclusiveGateways.ForEach(x => x.outgoing.Remove(inseq));
-                        trail.process.parallelGateways.ForEach(x => x.outgoing.Remove(inseq));
-                        trail.diagram.bpmnPlane.bpmnEdges.RemoveAll(x => x.id.Equals(inseq + "_edge"));
-                    }
-                    eel.Add(ee);
-                }
+                EndEvent ee = GetEndEvent(eventId);
+                RemoveEventInGoing(ee.incoming);
+                trail.process.endEvents.RemoveAll(y => y.id.Equals(ee.id));
+                trail.diagram.bpmnPlane.bpmnShapes.RemoveAll(y => y.id.Equals(ee.id + "_shape"));
             }
-            eel.ForEach(x => trail.process.endEvents.RemoveAll(y => y.id.Equals(x.id)));
-            eel.ForEach(x => trail.diagram.bpmnPlane.bpmnShapes.RemoveAll(y => y.id.Equals(x.id + "_shape")));
-            List<Task> tl = new List<Task>();
-            foreach (Task t in trail.process.tasks)
+            if (TaskExists(eventId))
             {
-                if (t.id.Equals(eventId))
-                {
-                    foreach (string outseq in t.outgoing)
-                    {
-                        trail.process.sequenceFlows.RemoveAll(x => x.id.Equals(outseq));
-                        trail.process.endEvents.ForEach(x => x.incoming.Remove(outseq));
-                        trail.process.tasks.ForEach(x => x.incoming.Remove(outseq));
-                        trail.process.exclusiveGateways.ForEach(x => x.incoming.Remove(outseq));
-                        trail.process.parallelGateways.ForEach(x => x.incoming.Remove(outseq));
-                        trail.diagram.bpmnPlane.bpmnEdges.RemoveAll(x => x.id.Equals(outseq + "_edge"));
-                    }
-                    foreach (string inseq in t.incoming)
-                    {
-                        trail.process.sequenceFlows.RemoveAll(x => x.id.Equals(inseq));
-                        trail.process.startEvents.ForEach(x => x.outgoing.Remove(inseq));
-                        trail.process.tasks.ForEach(x => x.outgoing.Remove(inseq));
-                        trail.process.exclusiveGateways.ForEach(x => x.outgoing.Remove(inseq));
-                        trail.process.parallelGateways.ForEach(x => x.outgoing.Remove(inseq));
-                        trail.diagram.bpmnPlane.bpmnEdges.RemoveAll(x => x.id.Equals(inseq + "_edge"));
-                    }
-                    tl.Add(t);
-                }
+                Task task = GetTask(eventId);
+                RemoveEventOutGoing(task.outgoing);
+                RemoveEventInGoing(task.incoming);
+                trail.process.tasks.RemoveAll(y => y.id.Equals(task.id));
+                trail.diagram.bpmnPlane.bpmnShapes.RemoveAll(y => y.id.Equals(task.id + "_shape"));
             }
-            tl.ForEach(x => trail.process.tasks.RemoveAll(y => y.id.Equals(x.id)));
-            tl.ForEach(x => trail.diagram.bpmnPlane.bpmnShapes.RemoveAll(y => y.id.Equals(x.id + "_shape")));
-            List<ParallelGateway> pgl = new List<ParallelGateway>();
-            foreach (ParallelGateway pg in trail.process.parallelGateways)
+            if (ParallelGatewayExists(eventId))
             {
-                if (pg.id.Equals(eventId))
-                {
-                    foreach (string outseq in pg.outgoing)
-                    {
-                        trail.process.sequenceFlows.RemoveAll(x => x.id.Equals(outseq));
-                        trail.process.endEvents.ForEach(x => x.incoming.Remove(outseq));
-                        trail.process.tasks.ForEach(x => x.incoming.Remove(outseq));
-                        trail.process.exclusiveGateways.ForEach(x => x.incoming.Remove(outseq));
-                        trail.process.parallelGateways.ForEach(x => x.incoming.Remove(outseq));
-                        trail.diagram.bpmnPlane.bpmnEdges.RemoveAll(x => x.id.Equals(outseq + "_edge"));
-                    }
-                    foreach (string inseq in pg.incoming)
-                    {
-                        trail.process.sequenceFlows.RemoveAll(x => x.id.Equals(inseq));
-                        trail.process.startEvents.ForEach(x => x.outgoing.Remove(inseq));
-                        trail.process.tasks.ForEach(x => x.outgoing.Remove(inseq));
-                        trail.process.exclusiveGateways.ForEach(x => x.outgoing.Remove(inseq));
-                        trail.process.parallelGateways.ForEach(x => x.outgoing.Remove(inseq));
-                        trail.diagram.bpmnPlane.bpmnEdges.RemoveAll(x => x.id.Equals(inseq + "_edge"));
-                    }
-                    pgl.Add(pg);
-                }
+                ParallelGateway pg = GetParallelGateWay(eventId);
+                RemoveEventOutGoing(pg.outgoing);
+                RemoveEventInGoing(pg.incoming);
+                trail.process.parallelGateways.RemoveAll(y => y.id.Equals(pg.id));
+                trail.diagram.bpmnPlane.bpmnShapes.RemoveAll(y => y.id.Equals(pg.id + "_shape"));
             }
-            pgl.ForEach(x => trail.process.parallelGateways.RemoveAll(y => y.id.Equals(x.id)));
-            pgl.ForEach(x => trail.diagram.bpmnPlane.bpmnShapes.RemoveAll(y => y.id.Equals(x.id + "_shape")));
-            List<ExclusiveGateway> egl = new List<ExclusiveGateway>();
-            foreach (ExclusiveGateway eg in trail.process.exclusiveGateways)
+            if (ExclusiveGatewayExists(eventId))
             {
-                if (eg.id.Equals(eventId))
-                {
-                    foreach (string outseq in eg.outgoing)
-                    {
-                        trail.process.sequenceFlows.RemoveAll(x => x.id.Equals(outseq));
-                        trail.process.endEvents.ForEach(x => x.incoming.Remove(outseq));
-                        trail.process.tasks.ForEach(x => x.incoming.Remove(outseq));
-                        trail.process.exclusiveGateways.ForEach(x => x.incoming.Remove(outseq));
-                        trail.process.parallelGateways.ForEach(x => x.incoming.Remove(outseq));
-                        trail.diagram.bpmnPlane.bpmnEdges.RemoveAll(x => x.id.Equals(outseq + "_edge"));
-                    }
-                    foreach (string inseq in eg.incoming)
-                    {
-                        trail.process.sequenceFlows.RemoveAll(x => x.id.Equals(inseq));
-                        trail.process.startEvents.ForEach(x => x.outgoing.Remove(inseq));
-                        trail.process.tasks.ForEach(x => x.outgoing.Remove(inseq));
-                        trail.process.exclusiveGateways.ForEach(x => x.outgoing.Remove(inseq));
-                        trail.process.parallelGateways.ForEach(x => x.outgoing.Remove(inseq));
-                        trail.diagram.bpmnPlane.bpmnEdges.RemoveAll(x => x.id.Equals(inseq + "_edge"));
-                    }
-                    egl.Add(eg);
-                }
+                ExclusiveGateway eg = GetExclusiveGateWay(eventId);
+                RemoveEventOutGoing(eg.outgoing);
+                RemoveEventInGoing(eg.incoming);
+                trail.process.exclusiveGateways.RemoveAll(y => y.id.Equals(eg.id));
+                trail.diagram.bpmnPlane.bpmnShapes.RemoveAll(y => y.id.Equals(eg.id + "_shape"));
             }
-            egl.ForEach(x => trail.process.exclusiveGateways.RemoveAll(y => y.id.Equals(x.id)));
-            egl.ForEach(x => trail.diagram.bpmnPlane.bpmnShapes.RemoveAll(y => y.id.Equals(x.id + "_shape")));
         }
 
         public Boolean HasMergeGate(string eventId)
@@ -444,23 +407,22 @@ namespace bpmntrails
         public void InsertMergeGate(string eventId, string gateId, string seqflowIdToEvent)
         {
             AddExclusiveGateway(gateId, true);
-            trail.process.sequenceFlows.FindAll(x => x.targetRef.Equals(eventId)).ForEach(x =>
-                {
-                    x.targetRef = gateId;
-                    trail.process.exclusiveGateways.Find(y => y.id.Equals(gateId)).incoming.Add(x.id);
-                    trail.process.tasks.Find(z => z.id.Equals(eventId)).incoming.Remove(x.id);
-                });
-            AddSequenceFlow(seqflowIdToEvent, gateId, eventId);
+            InsertGateHelper(eventId, gateId, seqflowIdToEvent);
         }
 
         private void InsertExclusiveGate(string eventId, string gateId, string seqflowIdToEvent)
         {
             AddExclusiveGateway(gateId, false);
+            InsertGateHelper(eventId, gateId, seqflowIdToEvent);
+        }
+
+        private void InsertGateHelper(string eventId, string gateId, string seqflowIdToEvent)
+        {
             trail.process.sequenceFlows.FindAll(x => x.targetRef.Equals(eventId)).ForEach(x =>
             {
                 x.targetRef = gateId;
-                trail.process.exclusiveGateways.Find(y => y.id.Equals(gateId)).incoming.Add(x.id);
-                trail.process.tasks.Find(z => z.id.Equals(eventId)).incoming.Remove(x.id);
+                GetExclusiveGateWay(gateId).incoming.Add(x.id);
+                GetTask(eventId).incoming.Remove(x.id);
             });
             AddSequenceFlow(seqflowIdToEvent, gateId, eventId);
         }
@@ -620,80 +582,80 @@ namespace bpmntrails
                 string targetType = "";
                 int x_target = 0, x_source = 0, y_target = 0, y_source = 0;
                 Bounds b;
-                if (trail.process.startEvents.Exists(se => se.id.Equals(sourceId)))
+                if (StartEventExists(sourceId))
                 {
-                    StartEvent se = trail.process.startEvents.Find(see => see.id.Equals(sourceId));
+                    StartEvent se = GetStartEvent(sourceId);
                     se.outgoing.Add(id);
                     sourceType = "se";
                     b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(se.id + "_shape")).bounds;
                     x_source = int.Parse(b.X);
                     y_source = int.Parse(b.Y);
                 }
-                else if (trail.process.startEvents.Exists(se => se.id.Equals(targetId)))
+                else if (StartEventExists(targetId))
                 {
                     Console.Write("Cannot target start events");
                 }
-                if (trail.process.endEvents.Exists(ee => ee.id.Equals(targetId)))
+                if (EndEventExists(targetId))
                 {
-                    EndEvent ee = trail.process.endEvents.Find(eee => eee.id.Equals(targetId));
+                    EndEvent ee = GetEndEvent(targetId);
                     ee.incoming.Add(id);
                     targetType = "se";
                     b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(ee.id + "_shape")).bounds;
                     x_target = int.Parse(b.X);
                     y_target = int.Parse(b.Y);
                 }
-                else if (trail.process.endEvents.Exists(se => se.id.Equals(sourceId)))
+                else if (EndEventExists(sourceId))
                 {
                     Console.Write("Cannot use end events as source");
                 }
-                if (trail.process.tasks.Exists(task => task.id.Equals(sourceId)))
+                if (TaskExists(sourceId))
                 {
-                    Task task = trail.process.tasks.Find(taske => taske.id.Equals(sourceId));
+                    Task task = GetTask(sourceId);
                     task.outgoing.Add(id);
                     sourceType = "task";
                     b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(task.id + "_shape")).bounds;
                     x_source = int.Parse(b.X);
                     y_source = int.Parse(b.Y);
                 }
-                else if (trail.process.tasks.Exists(task => task.id.Equals(targetId)))
+                else if (TaskExists(targetId))
                 {
-                    Task task = trail.process.tasks.Find(taske => taske.id.Equals(targetId));
+                    Task task = GetTask(targetId);
                     task.incoming.Add(id);
                     targetType = "task";
                     b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(task.id + "_shape")).bounds;
                     x_target = int.Parse(b.X);
                     y_target = int.Parse(b.Y);
                 }
-                if (trail.process.parallelGateways.Exists(par => par.id.Equals(sourceId)))
+                if (ParallelGatewayExists(sourceId))
                 {
-                    ParallelGateway par = trail.process.parallelGateways.Find(pare => pare.id.Equals(sourceId));
+                    ParallelGateway par = GetParallelGateWay(sourceId);
                     par.outgoing.Add(id);
                     sourceType = "gate";
                     b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(par.id + "_shape")).bounds;
                     x_source = int.Parse(b.X);
                     y_source = int.Parse(b.Y);
                 }
-                else if (trail.process.parallelGateways.Exists(par => par.id.Equals(targetId)))
+                else if (ParallelGatewayExists(targetId))
                 {
-                    ParallelGateway par = trail.process.parallelGateways.Find(pare => pare.id.Equals(targetId));
+                    ParallelGateway par = GetParallelGateWay(targetId);
                     par.incoming.Add(id);
                     targetType = "gate";
                     b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(par.id + "_shape")).bounds;
                     x_target = int.Parse(b.X);
                     y_target = int.Parse(b.Y);
                 }
-                if (trail.process.exclusiveGateways.Exists(exc => exc.id.Equals(sourceId)))
+                if (ExclusiveGatewayExists(sourceId))
                 {
-                    ExclusiveGateway exc = trail.process.exclusiveGateways.Find(exce => exce.id.Equals(sourceId));
+                    ExclusiveGateway exc = GetExclusiveGateWay(sourceId);
                     exc.outgoing.Add(id);
                     sourceType = "gate";
                     b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(exc.id + "_shape")).bounds;
                     x_source = int.Parse(b.X);
                     y_source = int.Parse(b.Y);
                 }
-                else if (trail.process.exclusiveGateways.Exists(exc => exc.id.Equals(targetId)))
+                else if (ExclusiveGatewayExists(targetId))
                 {
-                    ExclusiveGateway exc = trail.process.exclusiveGateways.Find(exce => exce.id.Equals(targetId));
+                    ExclusiveGateway exc = GetExclusiveGateWay(targetId);
                     exc.incoming.Add(id);
                     targetType = "gate";
                     b = trail.diagram.bpmnPlane.bpmnShapes.Find(x => x.id.Equals(exc.id + "_shape")).bounds;
