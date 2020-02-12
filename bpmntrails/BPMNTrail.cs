@@ -464,105 +464,140 @@ namespace bpmntrails
         #region Add node elements
         public void AddStartEvent(string id)
         {
-            StartEvent startEvent = new StartEvent
+            if (!IsIdInUse(id))
             {
-                id = id
-            };
-            trail.process.startEvents.Add(startEvent);
-            BPMNShape bPMNShape = new BPMNShape
+                StartEvent startEvent = new StartEvent
+                {
+                    id = id
+                };
+                trail.process.startEvents.Add(startEvent);
+                BPMNShape bPMNShape = new BPMNShape
+                {
+                    id = id + "_shape",
+                    bpmnElement = id
+                };
+                bPMNShape.bounds.X = placeX + "";
+                bPMNShape.bounds.Y = placeY + "";
+                bPMNShape.bounds.Width = SEHW + "";
+                bPMNShape.bounds.Height = SEHW + "";
+                trail.diagram.bpmnPlane.bpmnShapes.Add(bPMNShape);
+                UpdatePlacement();
+            }
+            else
             {
-                id = id + "_shape",
-                bpmnElement = id
-            };
-            bPMNShape.bounds.X = placeX + "";
-            bPMNShape.bounds.Y = placeY + "";
-            bPMNShape.bounds.Width = SEHW + "";
-            bPMNShape.bounds.Height = SEHW + "";
-            trail.diagram.bpmnPlane.bpmnShapes.Add(bPMNShape);
-            UpdatePlacement();
+                throw new Exception("Id in use.");
+            }
         }
 
         public void AddTask(string id, string name)
         {
-            Task task = new Task
+            if (!IsIdInUse(id))
             {
-                id = id,
-                name = name
-            };
-            trail.process.tasks.Add(task);
-            BPMNShape bPMNShape = new BPMNShape
+                Task task = new Task
+                {
+                    id = id,
+                    name = name
+                };
+                trail.process.tasks.Add(task);
+                BPMNShape bPMNShape = new BPMNShape
+                {
+                    id = id + "_shape",
+                    bpmnElement = id
+                };
+                bPMNShape.bounds.X = placeX + "";
+                bPMNShape.bounds.Y = placeY + "";
+                bPMNShape.bounds.Width = TW + "";
+                bPMNShape.bounds.Height = TH + "";
+                trail.diagram.bpmnPlane.bpmnShapes.Add(bPMNShape);
+                UpdatePlacement();
+            }
+            else
             {
-                id = id + "_shape",
-                bpmnElement = id
-            };
-            bPMNShape.bounds.X = placeX + "";
-            bPMNShape.bounds.Y = placeY + "";
-            bPMNShape.bounds.Width = TW + "";
-            bPMNShape.bounds.Height = TH + "";
-            trail.diagram.bpmnPlane.bpmnShapes.Add(bPMNShape);
-            UpdatePlacement();
+                throw new Exception("Id in use.");
+            }
         }
 
         public void AddEndEvent(string id)
         {
-            EndEvent endEvent = new EndEvent
+            if (!IsIdInUse(id))
             {
-                id = id
-            };
-            trail.process.endEvents.Add(endEvent);
-            BPMNShape bPMNShape = new BPMNShape
+                EndEvent endEvent = new EndEvent
+                {
+                    id = id
+                };
+                trail.process.endEvents.Add(endEvent);
+                BPMNShape bPMNShape = new BPMNShape
+                {
+                    id = id + "_shape",
+                    bpmnElement = id
+                };
+                bPMNShape.bounds.X = placeX + "";
+                bPMNShape.bounds.Y = placeY + "";
+                bPMNShape.bounds.Width = SEHW + "";
+                bPMNShape.bounds.Height = SEHW + "";
+                trail.diagram.bpmnPlane.bpmnShapes.Add(bPMNShape);
+                UpdatePlacement();
+            }
+            else
             {
-                id = id + "_shape",
-                bpmnElement = id
-            };
-            bPMNShape.bounds.X = placeX + "";
-            bPMNShape.bounds.Y = placeY + "";
-            bPMNShape.bounds.Width = SEHW + "";
-            bPMNShape.bounds.Height = SEHW + "";
-            trail.diagram.bpmnPlane.bpmnShapes.Add(bPMNShape);
-            UpdatePlacement();
+                throw new Exception("Id in use.");
+            }
         }
 
         public void AddParallelGateway(string id, Boolean converging)
         {
-            ParallelGateway parallelGateway = new ParallelGateway
+            if (!IsIdInUse(id))
             {
-                id = id,
-                gatewayDirection = (converging ? "Converging" : "Diverging")
-            };
-            trail.process.parallelGateways.Add(parallelGateway);
-            BPMNShape bPMNShape = new BPMNShape
+                ParallelGateway parallelGateway = new ParallelGateway
+                {
+                    id = id,
+                    gatewayDirection = (converging ? "Converging" : "Diverging")
+                };
+                trail.process.parallelGateways.Add(parallelGateway);
+                BPMNShape bPMNShape = new BPMNShape
+                {
+                    id = id + "_shape",
+                    bpmnElement = id
+                };
+                bPMNShape.bounds.X = placeX + "";
+                bPMNShape.bounds.Y = placeY + "";
+                bPMNShape.bounds.Width = GHW + "";
+                bPMNShape.bounds.Height = GHW + "";
+                trail.diagram.bpmnPlane.bpmnShapes.Add(bPMNShape);
+                UpdatePlacement();
+            }
+            else
             {
-                id = id + "_shape",
-                bpmnElement = id
-            };
-            bPMNShape.bounds.X = placeX + "";
-            bPMNShape.bounds.Y = placeY + "";
-            bPMNShape.bounds.Width = GHW + "";
-            bPMNShape.bounds.Height = GHW + "";
-            trail.diagram.bpmnPlane.bpmnShapes.Add(bPMNShape);
-            UpdatePlacement();
+                throw new Exception("Id in use.");
+            }
         }
 
         public void AddExclusiveGateway(string id, Boolean converging)
         {
-            ExclusiveGateway exclusiveGateway = new ExclusiveGateway
+            if (!IsIdInUse(id))
             {
-                id = id,
-                gatewayDirection = (converging ? "Converging" : "Diverging")
-            };
-            trail.process.exclusiveGateways.Add(exclusiveGateway);
-            BPMNShape bPMNShape = new BPMNShape
+                ExclusiveGateway exclusiveGateway = new ExclusiveGateway
+                {
+                    id = id,
+                    gatewayDirection = (converging ? "Converging" : "Diverging")
+                };
+                trail.process.exclusiveGateways.Add(exclusiveGateway);
+                BPMNShape bPMNShape = new BPMNShape
+                {
+                    id = id + "_shape",
+                    bpmnElement = id
+                };
+                bPMNShape.bounds.X = placeX + "";
+                bPMNShape.bounds.Y = placeY + "";
+                bPMNShape.bounds.Width = GHW + "";
+                bPMNShape.bounds.Height = GHW + "";
+                trail.diagram.bpmnPlane.bpmnShapes.Add(bPMNShape);
+                UpdatePlacement();
+            }
+            else
             {
-                id = id + "_shape",
-                bpmnElement = id
-            };
-            bPMNShape.bounds.X = placeX + "";
-            bPMNShape.bounds.Y = placeY + "";
-            bPMNShape.bounds.Width = GHW + "";
-            bPMNShape.bounds.Height = GHW + "";
-            trail.diagram.bpmnPlane.bpmnShapes.Add(bPMNShape);
-            UpdatePlacement();
+                throw new Exception("Id in use.");
+            }
         }
         #endregion
 
