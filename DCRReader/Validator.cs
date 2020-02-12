@@ -29,14 +29,9 @@ namespace DCRReader
 
         private void RunStates(dynamic bpmnEvent, Processor graph)
         {
-
             if (bpmnEvent.GetType().Equals(typeof(StartEvent)))
             {
-                StartEvent se = (StartEvent)bpmnEvent;
-                foreach (string seqId in se.outgoing)
-                {
-                    RunStates(trail.GetSequenceFlow(seqId), graph);
-                }
+                ((StartEvent)bpmnEvent).outgoing.ForEach(x => RunStates(trail.GetSequenceFlow(x), graph));
             }
             else if (bpmnEvent.GetType().Equals(typeof(EndEvent)))
             {
@@ -48,10 +43,7 @@ namespace DCRReader
                 try
                 {
                     graph.Execute(labelId[task.name]);
-                    foreach (string seqId in task.outgoing)
-                    {
-                        RunStates(trail.GetSequenceFlow(seqId), graph);
-                    }
+                    task.outgoing.ForEach(x => RunStates(trail.GetSequenceFlow(x), graph));
                 }
                 catch (Exception)
                 {
@@ -60,19 +52,11 @@ namespace DCRReader
             }
             else if (bpmnEvent.GetType().Equals(typeof(ParallelGateway)))
             {
-                ParallelGateway pg = (ParallelGateway)bpmnEvent;
-                foreach (string seqId in pg.outgoing)
-                {
-                    RunStates(trail.GetSequenceFlow(seqId), graph);
-                }
+                ((ParallelGateway)bpmnEvent).outgoing.ForEach(x => RunStates(trail.GetSequenceFlow(x), graph));
             }
             else if (bpmnEvent.GetType().Equals(typeof(ExclusiveGateway)))
             {
-                ExclusiveGateway eg = (ExclusiveGateway)bpmnEvent;
-                foreach (string seqId in eg.outgoing)
-                {
-                    RunStates(trail.GetSequenceFlow(seqId), graph);
-                }
+                ((ExclusiveGateway)bpmnEvent).outgoing.ForEach(x => RunStates(trail.GetSequenceFlow(x), graph));
             }
         }
     }
