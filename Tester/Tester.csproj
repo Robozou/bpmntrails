@@ -8,10 +8,11 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Tester</RootNamespace>
     <AssemblyName>Tester</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -36,15 +37,6 @@
     <StartupObject>Tester.TestProgram</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="bpmntrails">
-      <HintPath>..\bpmntrails\bin\Debug\bpmntrails.dll</HintPath>
-    </Reference>
-    <Reference Include="DCRReader">
-      <HintPath>..\DCRReader\bin\Debug\DCRReader.dll</HintPath>
-    </Reference>
-    <Reference Include="DotReader">
-      <HintPath>..\DotReader\bin\Debug\DotReader.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -62,6 +54,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\bpmntrails\bpmntrails.csproj">
+      <Project>{b259e6d3-97b7-4906-9d0b-6fbeef4fdbec}</Project>
+      <Name>bpmntrails</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DCRReader\DCRReader.csproj">
+      <Project>{8ff2d3a7-b792-4d51-9549-1dff45a2b0ea}</Project>
+      <Name>DCRReader</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

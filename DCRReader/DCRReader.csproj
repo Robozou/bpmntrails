@@ -32,9 +32,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="bpmntrails">
-      <HintPath>..\bpmntrails\bin\Debug\bpmntrails.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -52,6 +49,12 @@
     <Compile Include="XMLBuilder.cs" />
     <Compile Include="XMLOptimizer.cs" />
     <Compile Include="XMLReader.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\bpmntrails\bpmntrails.csproj">
+      <Project>{b259e6d3-97b7-4906-9d0b-6fbeef4fdbec}</Project>
+      <Name>bpmntrails</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
