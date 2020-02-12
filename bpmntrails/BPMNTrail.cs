@@ -94,6 +94,7 @@ namespace bpmntrails
             }
         }
 
+        #region Getters and other small helper methods
         public StartEvent GetStartEvent(string id)
         {
             return trail.process.startEvents.Find(x => x.id.Equals(id));
@@ -189,6 +190,37 @@ namespace bpmntrails
             return trail.process.parallelGateways.Find(x => x.id.Equals(id));
         }
 
+        public List<BPMNElement> GetAllElements()
+        {
+            List<BPMNElement> elements = new List<BPMNElement>();
+            GetTasks().ForEach(x => elements.Add(x));
+            GetExclusiveGateWays().ForEach(x => elements.Add(x));
+            GetParallelGateWays().ForEach(x => elements.Add(x));
+            GetEndEvents().ForEach(x => elements.Add(x));
+            GetStartEvents().ForEach(x => elements.Add(x));
+            return elements;
+        }
+
+        public SequenceFlow GetSequenceFlowByTargetRefId(string id)
+        {
+            return trail.process.sequenceFlows.Find(x => x.targetRef.Equals(id));
+        }
+
+        public List<BPMNElement> GetBPMNEventElements()
+        {
+            List<BPMNElement> elements = new List<BPMNElement>();
+            GetTasks().ForEach(x => elements.Add(x));
+            GetEndEvents().ForEach(x => elements.Add(x));
+            GetStartEvents().ForEach(x => elements.Add(x));
+            return elements;
+        }
+
+        public Boolean ContainsEvent(string id)
+        {
+            return GetBPMNEventElements().Exists(ele => ele.id.Equals(id));
+        }
+        #endregion
+
         public void AddBackLoopingSequence(string mergeGateId, string eventId, string seqFlowBackLoopId)
         {
             Task task = trail.process.tasks.Find(x => x.id.Equals(eventId));
@@ -256,28 +288,12 @@ namespace bpmntrails
 
         }
 
-        public List<BPMNElement> GetAllElements()
-        {
-            List<BPMNElement> elements = new List<BPMNElement>();
-            GetTasks().ForEach(x => elements.Add(x));
-            GetExclusiveGateWays().ForEach(x => elements.Add(x));
-            GetParallelGateWays().ForEach(x => elements.Add(x));
-            GetEndEvents().ForEach(x => elements.Add(x));
-            GetStartEvents().ForEach(x => elements.Add(x));
-            return elements;
-        }
-
-        public SequenceFlow GetSequenceFlowByTargetRefId(string id)
-        {
-            return trail.process.sequenceFlows.Find(x => x.targetRef.Equals(id));
-        }
-
         public Task GetTaskByNameIfIdInList(string name, List<string> idList)
         {
             return trail.process.tasks.Find(x => x.name.Equals(name) && idList.Contains(x.id));
         }
 
-        //NEEDS REFACTORING BADLY
+        //TODO NEEDS REFACTORING BADLY
         public void RemoveEventWithSequences(string eventId)
         {
             List<StartEvent> sel = new List<StartEvent>();
@@ -445,32 +461,7 @@ namespace bpmntrails
             AddSequenceFlow(seqflowIdToEvent, gateId, eventId);
         }
 
-        public Boolean ContainsEvent(string id)
-        {
-            foreach (StartEvent se in trail.process.startEvents)
-            {
-                if (se.id.Equals(id))
-                {
-                    return true;
-                }
-            }
-            foreach (Task t in trail.process.tasks)
-            {
-                if (t.id.Equals(id))
-                {
-                    return true;
-                }
-            }
-            foreach (EndEvent ee in trail.process.endEvents)
-            {
-                if (ee.id.Equals(id))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
+        #region Add node elements
         public void AddStartEvent(string id)
         {
             StartEvent startEvent = new StartEvent
@@ -573,6 +564,7 @@ namespace bpmntrails
             trail.diagram.bpmnPlane.bpmnShapes.Add(bPMNShape);
             UpdatePlacement();
         }
+        #endregion
 
         //TODO REFACTOR
         public void AddSequenceFlow(string id, string sourceId, string targetId)
