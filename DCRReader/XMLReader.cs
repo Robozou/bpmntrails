@@ -6,7 +6,6 @@ namespace DCRReader
 {
     public class XMLReader
     {
-        // change this to parse and fill out processor
         private List<List<string>> trace;
         private Processor graph;
         private XMLBuilder builder;
